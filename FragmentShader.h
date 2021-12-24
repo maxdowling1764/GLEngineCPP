@@ -4,5 +4,6 @@
 class FragmentShader : public Shader
 {
 	public:
-		FragmentShader(std::string source) : Shader(source, GL_VERTEX_SHADER) {}
+		FragmentShader(ShaderPath path) : Shader(path, GL_FRAGMENT_SHADER) {};
+		FragmentShader(std::string source) : Shader(source, GL_FRAGMENT_SHADER) {}
 };

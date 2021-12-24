@@ -11,13 +11,13 @@ private:
 	int m_height;
 	GLFWwindow* p_window;
 	
-	int Init();
+	
 
 public:
 	GLFWwindow* GetWindowHandle();
+	int Init();
 	Window(unsigned int w, unsigned int h, std::string name) : m_width(w), m_height(h), m_name(name) 
 	{
-		Init();
 	};
 	bool ShouldClose();
 

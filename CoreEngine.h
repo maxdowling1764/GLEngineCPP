@@ -3,17 +3,20 @@
 #include "Renderer.h"
 class CoreEngine
 {
+	const float DT = 0.01f;
 private:
 	Window m_window;
 	Renderer m_renderer;
+	float m_time = 0;
 
 	bool m_isRunning = false;
 	void loop();
 public:
 	void Start();
-	CoreEngine() :m_window(Window(1920, 1080, "Test")), m_renderer(Renderer())
+	CoreEngine() :m_window(Window(1080, 1080, "Test")), m_renderer(Renderer())
 	{
-		m_renderer.Init();
+		//m_renderer.Init();
+		m_window.Init();
 	}
 };
 

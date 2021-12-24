@@ -8,4 +8,7 @@ public:
 	{
 
 	};
+
+	VertexShader(ShaderPath path) : Shader(path, GL_VERTEX_SHADER)
+	{};
 };

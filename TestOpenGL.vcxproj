@@ -147,28 +147,34 @@
     <ClCompile Include="CoreEngine.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="RawMesh.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ModelParser.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="Util.cpp" />
+    <ClCompile Include="VAOLoader.cpp" />
     <ClCompile Include="VolumeElement.cpp" />
     <ClCompile Include="Window.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CoreEngine.h" />
     <ClInclude Include="FragmentShader.h" />
     <ClInclude Include="Mesh.h" />
-    <ClInclude Include="RawMesh.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="ModelParser.h" />
     <ClInclude Include="Renderer.h" />
-    <ClInclude Include="RenderObject.h" />
+    <ClInclude Include="SceneObject.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />
-    <ClInclude Include="Singleton.h" />
-    <ClInclude Include="Singleton.hpp" />
     <ClInclude Include="Util.h" />
+    <ClInclude Include="VAOLoader.h" />
     <ClInclude Include="VertexShader.h" />
     <ClInclude Include="VolumeElement.h" />
     <ClInclude Include="Window.h" />
+    <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\vertex.glsl" />
