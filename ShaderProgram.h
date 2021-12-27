@@ -18,6 +18,7 @@ public:
 	void Init();
 	ShaderProgram& Use();
 	void u_SetMat4(const char* name, const glm::mat4& val);
+	void u_SetVec2(const char* name, const glm::vec2& val);
 	void u_SetFloat(const char* name, const float& val);
 private:
 	VertexShader m_vertexShader;

@@ -16,17 +16,25 @@ void Renderer::Render()
 	rootVolume.Render(m_shader);
 }
 
+void Renderer::SetJuliaPos(const glm::vec2& p)
+{
+	m_juliaPos = glm::vec2(p);
+	m_shader.u_SetVec2("julia_pos", p);
+}
+
+
 void Renderer::Update(const float& time, const float& dt)
 {
 	m_shader.u_SetFloat("time", time);
+	m_shader.u_SetVec2("julia_pos", m_juliaPos);
 }
 
 void Renderer::Init()
 {
 	m_shader.Init();
 	m_shader.Use();
+	m_shader.u_SetVec2("julia_pos", glm::vec2(1.0f, 0.0f));
 	m_shader.u_SetMat4("projection", glm::ortho(-1.0f, 1.0f, 1.0f, -1.0f, 0.0f, -100.0f));
-	m_shader.u_SetFloat("time", 1.0f);
 	glEnable(GL_BLEND);
 	
 	rootVolume.Init(m_loader);
