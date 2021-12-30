@@ -7,6 +7,7 @@ void processInput(GLFWwindow* window)
 		glfwSetWindowShouldClose(window, true);
 	}
 }
+
 void CoreEngine::loop()
 {
 	m_renderer.Init();
@@ -14,9 +15,6 @@ void CoreEngine::loop()
 	{
 		// Process Inputs
 		processInput(m_window.GetWindowHandle());
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
 		m_renderer.Update(m_time, DT);
 		// Render Here 
 		m_renderer.Render();

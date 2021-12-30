@@ -3,8 +3,9 @@
 #include <glm/gtc/quaternion.hpp>
 #include <string>
 std::string read_file(std::string& filepath);
-struct Camera
+unsigned int load_texture(char* path, int& w, int& h, int& n);
+struct GLMeshPtr
 {
-	glm::vec3 position;
-	glm::quat lookAt;
+	unsigned int m_vao, m_vbo, m_ebo;
+	GLMeshPtr(unsigned int vao, unsigned int vbo, unsigned int ebo) : m_vao(vao), m_vbo(vbo), m_ebo(ebo) {};
 };

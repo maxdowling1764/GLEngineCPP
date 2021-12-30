@@ -6,12 +6,17 @@
 struct Vertex
 {
 	glm::vec3 Position;
+	glm::vec3 Normal;
+	glm::vec2 Texture;
 
-	Vertex(glm::vec3 pos)
+	Vertex(glm::vec3 pos, glm::vec3 norm, glm::vec2 tex)
 	{
 		Position = pos;
+		Normal = norm;
+		Texture = tex;
 	}
 	Vertex() :Vertex(glm::vec3(0.0f)) {};
+	Vertex(glm::vec3 pos) : Vertex(pos, glm::vec3(0.0f), glm::vec2(0.0f)) {};
 };
 struct Texture 
 {
@@ -27,12 +32,11 @@ public:
 	std::vector<Vertex> m_vertices;
 	std::vector<unsigned int> m_indices;
 	std::vector<Texture> m_textures;
-	unsigned int m_vao;
-	unsigned int m_vbo;
+	GLMeshPtr m_meshPtr;
 	/*
 	* Default Constructor
 	*/
-	Mesh() :m_vertices({}), m_indices({}), m_textures({}), m_vao(0), m_vbo(0)
+	Mesh() :m_vertices({}), m_indices({}), m_textures({}), m_meshPtr(GLMeshPtr(0,0,0))
 	{
 
 	};
@@ -67,16 +71,6 @@ public:
 	
 	void Render(ShaderProgram& shader);
 	void Init();
-	unsigned int GetVAOId() { return m_vaoID; };
-	void SetVAOId(unsigned int vao) { m_vaoID = vao; };
-
-private:
-	/*
-	* Need to store a reference to loader instance
-	*/
-
-	unsigned int m_vaoID;
-	unsigned int ebo;
 };
 //class GeometryLoader
 //{

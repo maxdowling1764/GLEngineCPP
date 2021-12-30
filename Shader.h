@@ -12,6 +12,7 @@ class Shader
 	
 private:
 	unsigned int m_shaderHandle = 0;
+	std::string dir = "shaders/";
 	unsigned int m_type;
 	std::string m_src;
 	std::string m_path;

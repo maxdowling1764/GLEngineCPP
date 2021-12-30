@@ -98,11 +98,11 @@ vec2 map(vec2 z0, vec2 c, out float i)
 
 void main()
 {
-    float val = 0.0f;
-    vec2 z = map(2*position.xy, 1.5*vec2(-cos(time), sin(time*0.5))*cos(time), val);
-    vec3 fragLight = vec3(z.x, z.y, z.y);
-    float arg = c_arg(z);
-    vec3 argColor = vec3(cos(arg), -sin(arg), 0.5*(cos(arg) + sin(arg)));
-    vec3 c = mix(argColor, fragLight, 1.0f-val);
-    gl_FragColor = vec4(c.x, c.y, c.z, 1.0f);
+    // float val = 0.0f;
+    // vec2 z = map(2*position.xy, 1.5*vec2(-cos(time), sin(time*0.5))*cos(time), val);
+    // vec3 fragLight = vec3(z.x, z.y, z.y);
+    // float arg = c_arg(z);
+    // vec3 argColor = vec3(cos(arg), -sin(arg), 0.5*(cos(arg) + sin(arg)));
+    // vec3 c = mix(argColor, fragLight, 1.0f-val);
+    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0f);
 } 

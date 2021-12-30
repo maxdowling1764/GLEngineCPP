@@ -8,9 +8,21 @@ private:
 	Model m_model;
 	Mesh m_mesh;
 public:
-	Quad(glm::vec3 topLeft, glm::vec3 topRight, glm::vec3 bottomLeft, glm::vec3 bottomRight) {
+	Quad(glm::vec3 topLeft, glm::vec3 topRight, glm::vec3 bottomLeft, glm::vec3 bottomRight) 
+	{
 
+		// Positions
 		std::vector<glm::vec3> verts = { topLeft, topRight, bottomLeft, bottomRight};
+		
+		// Texture Coordinates 
+		glm::vec2 texCoords[4] = 
+		{ 
+			glm::vec2(0.0f, 1.0f), 
+			glm::vec2(1.0f, 1.0f), 
+			glm::vec2(0.0f, 0.0f), 
+			glm::vec2(1.0f, 0.0f) 
+		};
+
 		std::vector<Vertex> meshVerts = {};
 		for (int i = 0; i < verts.size(); i++)
 		{

@@ -7,6 +7,8 @@ class CoreEngine
 private:
 	Window m_window;
 	Renderer m_renderer;
+	glm::vec2 m_PrevMousePos;
+	glm::vec2 m_MouseVel;
 	float m_time = 0;
 
 	bool m_isRunning = false;

@@ -28,7 +28,8 @@ Shader::Shader(ShaderPath path, unsigned int type)
 {
 	m_path = path.path;
 	m_type = type;
-	m_src = read_file(m_path);
+	std::string p = dir + m_path;
+	m_src = read_file(p);
 	std::cout << m_path << std::endl;
 	std::cout << m_src << std::endl;
 }

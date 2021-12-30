@@ -19,6 +19,7 @@ public:
 	ShaderProgram& Use();
 	void u_SetMat4(const char* name, const glm::mat4& val);
 	void u_SetFloat(const char* name, const float& val);
+	void u_SetSampler2D(const char* name, const unsigned int& tex);
 private:
 	VertexShader m_vertexShader;
 	FragmentShader m_fragmentShader;

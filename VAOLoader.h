@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "Mesh.h"
+#include "Util.h"
 #include <glad/glad.h>
 class VAOLoader
 {
@@ -51,8 +52,16 @@ public:
 		glVertexAttribPointer(attribLocation, sizeof(T), GL_FLOAT, false, 0, (void*)0);
 		glBindVertexArray(0);
 	}
+
+	/// <summary>
+	/// Load data to vbo, create Mesh and return it
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="data"></param>
+	/// <param name="indices"></param>
+	/// <returns></returns>
 	template<typename T>
-	Mesh loadToVAO(std::vector<T> data, std::vector<unsigned int> indices)
+	GLMeshPtr loadToVAO(std::vector<T> data, std::vector<unsigned int> indices)
 	{
 		unsigned int vao = createVAO();
 		unsigned int vbo = createVBO(GL_ELEMENT_ARRAY_BUFFER);
@@ -72,17 +81,50 @@ public:
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(T), (void*)0);
 		glEnableVertexAttribArray(0);
 		glBindVertexArray(0);
-		Mesh r = Mesh(data, indices);
-		r.m_vao = vao;
-		r.m_vbo = vbo;
+		return GLMeshPtr(vao, vbo, ebo);
+	}
 
-		r.SetVAOId(vaos.size()-1);
-		return r;
+	/// <summary>
+	/// Load with attribute offsets
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	/// <param name="data"></param>
+	/// <param name="attribOffsets"></param>
+	/// <param name="indices"></param>
+	/// <returns></returns>
+	GLMeshPtr loadToVAO(std::vector<Vertex> data, std::vector<unsigned int> attribOffsets, std::vector<unsigned int> indices)
+	{
+		unsigned int vao = createVAO();
+		unsigned int vbo = createVBO(GL_ELEMENT_ARRAY_BUFFER);
+
+		unsigned int ebo;
+		glGenBuffers(1, &ebo);
+		ebos.push_back(ebo);
+
+		glBindVertexArray(vao);
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(Vertex), &data[0], GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int),
+			&indices[0], GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(0));
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Texture));
+		
+		glBindVertexArray(0);
+		return GLMeshPtr(vao, vbo, ebo);
 	}
 
 	Mesh& LoadMesh(Mesh& m)
 	{
-		m = loadToVAO(m.m_vertices, m.m_indices);
+		// Load vertex data with 3 floats for position and 2 for texture
+		GLMeshPtr meshptr = loadToVAO(m.m_vertices, std::vector<unsigned int>({3, 3, 2}), m.m_indices);
+		m.m_meshPtr = meshptr;
 		return m;
 	}
 };

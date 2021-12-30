@@ -13,7 +13,7 @@ public:
 	SceneObject() :m_transform(glm::mat4(1.0f)), m_children({}),m_parent(nullptr) {};
 	SceneObject(glm::mat4 transform) :m_transform(transform), m_children({}), m_parent(nullptr) {};
 	SceneObject(glm::mat4 transform, SceneObject* parent) :m_transform(transform), m_children({}), m_parent(parent) {};
-	void Update();
+	void Update(float dt);
 	void Init();
 	void Start();
 };
