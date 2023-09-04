@@ -2,8 +2,10 @@
 in vec4 position;
 // in vec2 uv;
 // in vec3 norm;
-uniform mat4 cam_mat;
+
 // uniform mat4 projectionMatrix;
+uniform vec3 cam_up;
+uniform vec3 cam_forward;
 uniform vec3 cam_pos;
 vec3 spherePos = vec3(0.0f, 0.0f, 2.0f);
 vec3 spherePos2 = vec3(1.0f, 0.0f, 1.0f);
@@ -117,11 +119,10 @@ float marchRayDensity(vec3 origin, vec3 ray, out vec3 dest, float step)
     float accum = 0.0f;
     float occlusion = 0.0f;
     float temp = 0.0f;
-    for(vec3 o = origin; o.z < 10.0f; o += ray*step)
+    for (vec3 t = origin; t.z < 10.0f; t +=ray* step)
     {
-        vec3 t = (cam_mat * vec4(o, 1.0f)).xyz; // Transform by camera matrix
         stepcount++;
-        vec2 z = map(1.5*t.xy*(t.z-2.0f), julia_pos*0.5f*(t.z*2.0f - 4.0f), temp);
+        vec2 z = map(1.5*t.xy*(t.z-2.0f), julia_pos, temp);
         accum += temp;
     }
     return accum / stepcount;
@@ -132,22 +133,14 @@ float marchRayDensity(vec3 origin, vec3 ray, out vec3 dest, float step)
 void main()
 {
     // ray sphere at camera
-    vec3 ray = normalize(position.xyz);
-    vec3 ray2;
+    vec3 ray = normalize(position.x * cross(cam_forward, cam_up) + position.y * cam_up + cam_forward);
+    //vec3 ray2;
     vec3 dest;
-    if (distance(vec2(0.0f), ray.xy) <= 4.0f)
-    {
-        float val = marchRayDensity(vec3(0.0f), ray, dest, 0.05f);
-        ray2 = normalize(lightPos - dest);
-        //float occlusion = integrateRayDensity(dest, ray2, 1.0f);
-        vec3 fragLight = position.xyz*val*8.5;
-        //vec3 argColor = vec3(cos(arg), sin(arg), 0.5*(cos(arg) + sin(arg)));
-        
-        gl_FragColor = vec4((ray2*ray)*fragLight, 1.0f);
-    }
-    else
-    {
-            gl_FragColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+    float val = marchRayDensity(cam_pos, ray, dest, 0.01f);
+    //ray2 = normalize(dest-lightPos);
+    //float occlusion = integrateRayDensity(dest, ray2, 1.0f);
+    vec3 fragLight = position.xyz * val * 8.5;
+    //vec3 argColor = vec3(cos(arg), sin(arg), 0.5*(cos(arg) + sin(arg)));
 
-    }
+    gl_FragColor = vec4(fragLight, 1.0f);
 } 

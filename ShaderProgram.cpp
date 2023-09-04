@@ -1,9 +1,9 @@
 #include "ShaderProgram.h"
 #include "Shader.h";
 #include <iostream>
+
 ShaderProgram::ShaderProgram(ShaderPath vertexShader, ShaderPath fragmentShader):m_vertexShader(VertexShader(vertexShader)), m_fragmentShader(FragmentShader(fragmentShader))
 {
-
 }
 
 ShaderProgram::ShaderProgram(VertexShader vs, FragmentShader fs):m_vertexShader(vs), m_fragmentShader(fs)

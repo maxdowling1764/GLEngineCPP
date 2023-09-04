@@ -18,14 +18,15 @@ struct Texture
 	unsigned int id;
 	std::string type;
 };
+
+/*
+* Wrapper class for OpenGL objects representing a mesh
+*/
 class Mesh
 {
 public:
-	/*
-	* Mesh has ownership of these members
-	*/
 	std::vector<Vertex> m_vertices;
-	std::vector<unsigned int> m_indices;
+	std::vector<unsigned int> m_indices;	// Face indices
 	std::vector<Texture> m_textures;
 	unsigned int m_vao;
 	unsigned int m_vbo;
