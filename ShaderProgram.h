@@ -1,7 +1,7 @@
 #pragma once
 #include "FragmentShader.h"
 #include "VertexShader.h"
-#include <glm/gtc/type_ptr.hpp>
+#include <gtc/type_ptr.hpp>
 #include <iostream>
 class ShaderProgram
 {
@@ -19,7 +19,9 @@ public:
 	ShaderProgram& Use();
 	void u_SetMat4(const char* name, const glm::mat4& val);
 	void u_SetVec2(const char* name, const glm::vec2& val);
+	void u_SetVec3(const char* name, const glm::vec3& val);
 	void u_SetFloat(const char* name, const float& val);
+
 private:
 	VertexShader m_vertexShader;
 	FragmentShader m_fragmentShader;

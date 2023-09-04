@@ -78,9 +78,9 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <PublicIncludeDirectories>C:\Users\maxdo\source\glfw-3.3.6\include;$(PublicIncludeDirectories)</PublicIncludeDirectories>
-    <IncludePath>C:\Users\maxdo\source\lib\glm-0.9.9.8;C:\Users\maxdo\source\lib\glad\include;C:\Users\maxdo\source\glfw-3.3.6\out\install\x64-Debug\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\maxdo\source\glfw-3.3.6\out\install\x64-Debug\lib;$(LibraryPath)</LibraryPath>
+    <PublicIncludeDirectories>$(PublicIncludeDirectories)</PublicIncludeDirectories>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -119,11 +119,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\Code\glm\glm;D:\Code\glad\include;D:\Code\glfw-3.3.8.bin.WIN64\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Code\glfw-3.3.8.bin.WIN64\lib-vc2022</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -143,7 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\lib\glad\src\glad.c" />
+    <ClCompile Include="..\glad\src\glad.c" />
     <ClCompile Include="CoreEngine.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -166,6 +168,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelParser.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SceneObject.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />

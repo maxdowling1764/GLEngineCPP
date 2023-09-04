@@ -4,6 +4,7 @@
 class CoreEngine
 {
 	const float DT = 0.0001f;
+	const float move_speed = 0.125f;
 	
 private:
 	Window m_window;

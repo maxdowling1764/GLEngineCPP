@@ -1,5 +1,5 @@
 #pragma once
-#include <glm/glm.hpp>
+#include <glm.hpp>
 #include "SceneObject.h"
 #include "Mesh.h"
 #include "VAOLoader.h"

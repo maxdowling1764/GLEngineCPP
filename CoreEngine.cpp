@@ -6,7 +6,33 @@ void CoreEngine::processInput(GLFWwindow* window)
 	{
 		glfwSetWindowShouldClose(window, true);
 	}
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		m_renderer.SetCameraPos(m_renderer.GetCameraPos() + move_speed * glm::vec3(0.0f, 0.0f, 1.0f));
+	}
+	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		m_renderer.SetCameraPos(m_renderer.GetCameraPos() + move_speed * glm::vec3(0.0f, 0.0f, -1.0f));
+	}
+	else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		m_renderer.SetCameraPos(m_renderer.GetCameraPos() + move_speed * glm::vec3(1.0f, 0.0f, 0.0f));
+	}
+	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		m_renderer.SetCameraPos(m_renderer.GetCameraPos() + move_speed * glm::vec3(-1.0f, 0.0f, 0.0f));
+	}
+	else if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+	{
+		m_renderer.SetCameraPos(m_renderer.GetCameraPos() + move_speed * glm::vec3(0.0f, 1.0f, 0.0f));
+	}
+	else if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+	{
+		m_renderer.SetCameraPos(m_renderer.GetCameraPos() + move_speed * glm::vec3(0.0f, -1.0f, 0.0f));
+	}
 }
+
+
 
 void CoreEngine::UpdateJuliaPos()
 {
@@ -16,6 +42,7 @@ void CoreEngine::UpdateJuliaPos()
 	glfwGetCursorPos(m_window.GetWindowHandle(), &xpos, &ypos);
 	glfwGetFramebufferSize(m_window.GetWindowHandle(), &w, &h);
 	m_renderer.SetJuliaPos(glm::vec2(2.0f*(xpos / w) - 1.0f, 2.0f*(ypos / h) - 1.0f));
+	m_renderer.SetCameraMat(glm::rotate(m_renderer.GetCameraMat(), 0.01f, glm::vec3(0.0f, 1.0f, 0.0f)));
 	//std::cout << "Mouse Position: " << xpos/w << ", " << ypos/h << std::endl;
 }
 
