@@ -22,7 +22,7 @@ public:
 	{
 		m_window = Window(1920, 1080, "Test");		
 		m_window.Init();
-		m_renderer.Init();
+		//m_renderer.Init();
 	}
 };
 

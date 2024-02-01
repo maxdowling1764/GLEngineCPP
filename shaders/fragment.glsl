@@ -4,6 +4,7 @@ in vec4 position;
 // in vec3 norm;
 
 // uniform mat4 projectionMatrix;
+uniform sampler3D tex;
 uniform vec3 cam_up;
 uniform vec3 cam_forward;
 uniform vec3 cam_pos;
@@ -83,6 +84,41 @@ vec4 sqr_mod( in vec4 a ) // square a quaterion
                  2.0*a.x*a.w );
 }
 
+float smoothmax(float a, float b, float k)
+{
+    return log(exp(k * a) + exp(k * b)) / k;
+}
+
+vec2 grad_smoothmax(float a, float b)
+{
+    float d = exp(a) + exp(b);
+    return vec2(exp(a) / d, exp(a) / d);
+}
+
+float sdf_sphere(vec3 c, float r, vec3 p)
+{
+    return length(p - c) - r;
+}
+
+float sdf(vec3 p)
+{
+    vec3 c1 = vec3(1.0f,2f,0.0f);
+    vec3 c2 = vec3(2f, 0.0f, 0f);
+    float r1 = 1f;
+    float r2 = 1f;
+    // f = -log(exp(-k*(sqrt((p-c1)*(p-c1))-r1)) + exp(-k*(sqrt((p-c2)*(p-c2))-r2)))/k;
+    // f = -log(exp(-k*(sqrt((p-c1)*(p-c1))-r1)) + exp(-k*(sqrt((p-c2)*(p-c2))-r2)))/k
+    // u = exp(-k*(sqrt((p-c1)*(p-c1))-r1)) + exp(-k*(sqrt((p-c2)*(p-c2))-r2)) = exp(-k*v1) + exp(-k*v2)
+    // v_i = sqrt((p-c_i)*(p-c_i))-r_i
+    // @x_j v_i = -
+    // 
+    // f = -log(u)/k
+    // grad(f) = (-1/k)*(1/u)grad(u) = (-1/ku)grad(u)
+    // grad(u)_i = @x_i(u)
+    // u = exp(-k*(sqrt(sum(p_i - c_i)^2)
+    return -smoothmax(-sdf_sphere(c1, r1, p), -sdf_sphere(c2, r2, p), 2f);
+}
+
 vec2 map(vec2 z0, vec2 c, out float i)
 {
     vec2 z = z0;
@@ -94,7 +130,7 @@ vec2 map(vec2 z0, vec2 c, out float i)
             break;
         } 
 	}
-    i = i / 20.0f;
+    i = i / 5.0f;
     return z;
 }
 
@@ -113,13 +149,26 @@ float integrateRayDensity(vec3 origin, vec3 ray, float step)
     return accum / stepcount;
 }
 
+// Integrate texture over ray
+vec4 mean_tex_ray(vec3 origin, vec3 ray, float step, sampler3D tex)
+{
+    vec4 res = vec4(0.0f);
+    int n_steps = 1;
+    for (vec3 t = origin; length(t-origin) < 20.0f; t += ray * step)
+    {
+        res += texture(tex, t/20.0f);
+        n_steps++;
+    }
+    return res / n_steps;
+}
+
 float marchRayDensity(vec3 origin, vec3 ray, out vec3 dest, float step)
 {
     int stepcount = 0;
     float accum = 0.0f;
     float occlusion = 0.0f;
     float temp = 0.0f;
-    for (vec3 t = origin; t.z < 10.0f; t +=ray* step)
+    for (vec3 t = origin; length(t-origin) < 50.0f; t +=ray* step)
     {
         stepcount++;
         vec2 z = map(1.5*t.xy*(t.z-2.0f), julia_pos, temp);
@@ -128,19 +177,49 @@ float marchRayDensity(vec3 origin, vec3 ray, out vec3 dest, float step)
     return accum / stepcount;
 }
 
+float sdfmarch(vec3 origin, vec3 ray, out vec3 dest, int maxiter, float epsilon)
+{
+    vec3 t = origin;
+    float d;
+    int i = 0;
+    while ((d = sdf(t)) > epsilon && i < maxiter)
+    {
+        t += d * ray;
+        i++;
+    }
+    dest = t;
+    return i / maxiter;
+}
 
+vec4 mean_tex_ray_scattered(vec3 origin, vec3 ray, vec3 lightpos, float step, sampler3D tex)
+{
+    vec4 res = vec4(0.0f);
+    int n_steps = 1;
+    for (vec3 t = origin; length(t-origin) < 20.0f; t += ray * step)
+    {
+        vec3 lightdir = normalize(lightpos - t);
+        vec4 l = mean_tex_ray(t, lightdir, 5.0f, tex);
+        float m = 1.0f / length(l);
+        res += mix(l, texture(tex, t / 20.0f), m);
+        n_steps++;
+    }
+    return res / n_steps;
+}
 
 void main()
 {
+    float aspect = 1920.0f / 1080.0f;
     // ray sphere at camera
-    vec3 ray = normalize(position.x * cross(cam_forward, cam_up) + position.y * cam_up + cam_forward);
+    vec3 ray = normalize(position.x * aspect * cross(cam_forward, cam_up) + position.y * cam_up + cam_forward);
     //vec3 ray2;
     vec3 dest;
-    float val = marchRayDensity(cam_pos, ray, dest, 0.01f);
+    vec4 val = mean_tex_ray_scattered(cam_pos, ray,vec3(10.0f*sin(50.0f*time), 0.0f, 0.0f), 0.5f, tex);
+            //sdfmarch(cam_pos, ray, dest, 100, 0.01f); 
+            //marchRayDensity(cam_pos, ray, dest, 0.025f);
     //ray2 = normalize(dest-lightPos);
     //float occlusion = integrateRayDensity(dest, ray2, 1.0f);
-    vec3 fragLight = position.xyz * val * 8.5;
+    //vec3 fragLight = dest.xyz * (1.0f-val)*0.5f;
     //vec3 argColor = vec3(cos(arg), sin(arg), 0.5*(cos(arg) + sin(arg)));
 
-    gl_FragColor = vec4(fragLight, 1.0f);
+    gl_FragColor = val;//vec4(fragLight, 1.0f);
 } 

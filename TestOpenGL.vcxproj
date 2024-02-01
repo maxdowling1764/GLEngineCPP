@@ -156,6 +156,7 @@
     <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="Texture3D.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="VAOLoader.cpp" />
     <ClCompile Include="VolumeElement.cpp" />
@@ -170,10 +171,10 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelParser.h" />
     <ClInclude Include="Renderer.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="SceneObject.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="Texture3D.h" />
     <ClInclude Include="Util.h" />
     <ClInclude Include="VAOLoader.h" />
     <ClInclude Include="VertexShader.h" />

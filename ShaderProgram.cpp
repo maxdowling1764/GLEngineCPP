@@ -61,6 +61,11 @@ void ShaderProgram::u_SetFloat(const char* name, const float& val)
 	glUniform1f(glGetUniformLocation(m_programHandle, name), val);
 }
 
+void ShaderProgram::u_Set1i(const char* name, const int& val)
+{
+	glUniform1f(glGetUniformLocation(m_programHandle, name), val);
+}
+
 void ShaderProgram::attach()
 {
 	glAttachShader(m_programHandle, m_vertexShader.GetShaderHandle());

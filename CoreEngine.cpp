@@ -3,38 +3,66 @@
 #include "Camera.h"
 void CoreEngine::processInput(GLFWwindow* window)
 {
-	glm::vec3 camPos = m_renderer.GetActiveCamera()->GetPosition();
+	glm::vec3 cam_pos = m_renderer.GetActiveCamera()->GetPosition();
+	glm::vec3 cam_forward = m_renderer.GetActiveCamera()->GetForward();
+	glm::vec3 cam_up = m_renderer.GetActiveCamera()->GetUp();
+	glm::vec3 cam_left = glm::cross(cam_up, cam_forward);
 	glm::vec3 deltaPos = glm::vec3(0.0f);
+	float d_theta = 0.0f;
+	float d_phi = 0.0f;
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(window, true);
 	}
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		deltaPos = move_speed * glm::vec3(0.0f, 0.0f, 1.0f);
+		deltaPos += move_speed * cam_forward;
 	}
-	else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		deltaPos = move_speed * glm::vec3(0.0f, 0.0f, -1.0f);
+		deltaPos -= move_speed * cam_forward;
 	}
-	else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		deltaPos = move_speed * glm::vec3(1.0f, 0.0f, 0.0f);
+		deltaPos += move_speed * cam_left;
 	}
-	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		deltaPos = move_speed * glm::vec3(-1.0f, 0.0f, 0.0f);
+		deltaPos -= move_speed * cam_left;
 	}
-	else if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
 	{
-		deltaPos = move_speed * glm::vec3(0.0f, 1.0f, 0.0f);
+		deltaPos += move_speed * cam_up;
 	}
-	else if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 	{
-		deltaPos = move_speed * glm::vec3(0.0f, -1.0f, 0.0f);
+		deltaPos -= move_speed * cam_up;
 	}
-	camPos = camPos + deltaPos;
-	m_renderer.GetActiveCamera()->SetPosition(camPos);
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+	{
+		d_theta += 0.025f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+	{
+		d_theta -= 0.025f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		d_phi += 0.025f;
+	}
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		d_phi -= 0.025f;
+	}
+	cam_pos = cam_pos + deltaPos*0.5f;
+	cam_left = glm::normalize(cam_left - d_theta * cam_forward);
+	cam_up = glm::normalize(d_phi * cam_forward + cam_up);
+
+	cam_forward = glm::cross(cam_left, cam_up);
+	cam_up = glm::cross(cam_forward, cam_left);
+	m_renderer.GetActiveCamera()->SetPosition(cam_pos);
+	m_renderer.GetActiveCamera()->SetForward(cam_forward);
+	m_renderer.GetActiveCamera()->SetUp(cam_up);
 }
 
 
@@ -60,6 +88,7 @@ void CoreEngine::loop()
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		UpdateJuliaPos();
+		m_time += DT;
 		m_renderer.Update(m_time, DT);
 		// Render Here 
 		m_renderer.Render();

@@ -21,6 +21,7 @@ public:
 	void u_SetVec2(const char* name, const glm::vec2& val);
 	void u_SetVec3(const char* name, const glm::vec3& val);
 	void u_SetFloat(const char* name, const float& val);
+	void u_Set1i(const char* name, const int& val);
 
 private:
 	VertexShader m_vertexShader;
