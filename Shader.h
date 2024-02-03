@@ -1,26 +1,33 @@
 #pragma once
 #include <string>
+#include <vector>
 #include "Util.h"
 
 typedef struct ShaderPath 
 { 
 	std::string path; 
-	ShaderPath(std::string p) { path = p; }; 
+	std::vector<std::string> includes;
+
+	ShaderPath(std::string p, const std::vector<std::string>& i) : includes(i), path(p){}; 
+	ShaderPath(std::string p) : path(p), includes(std::vector<std::string>()) {};
 } ShaderPath;
 class Shader
 {
-	
+protected:
+	ShaderPath m_path;
 private:
-	unsigned int m_shaderHandle = 0;
+	unsigned int m_shaderHandle;
 	unsigned int m_type;
 	std::string m_src;
-	std::string m_path;
+	
 
 public:
-	Shader(std::string shaderSource, unsigned int type);
+	Shader(ShaderPath& path, unsigned int type) : 
+		m_shaderHandle(0), m_path(path), m_type(type), m_src(read_file(path.path)) {};
+	
 	std::string GetSource();
 	void Init();
-	Shader(ShaderPath path, unsigned int type);
+	
 	const unsigned int GetShaderHandle();
 	
 };

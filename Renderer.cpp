@@ -53,16 +53,23 @@ void Renderer::Init()
 	m_shader.Use();
 	texture.RenderInit();
 	const int w = 255; const int h = 255; const int d = 255;
-
-	glm::vec4 val = glm::vec4(1.0f, 1.0f, 0.0f, 1.0f);
+	float ecc = 30;
+	glm::vec3 c = glm::vec3(w/ecc, h/2.0f, h/2.0f);
+	glm::vec3 c2 = glm::vec3(w - w/ecc, h/2.0f, h/2.0f);
+	float r = 255;
+	glm::vec4 val = glm::vec4(1.0f);
 	for (int i = 0; i < w; i++)
 	{
 		for (int j = 0; j < h; j++)
 		{
 			for (int k = 0; k < d; k++)
 			{
-				float s = 1.0f / 255.0f;
-				glm::vec4 v = s * glm::vec4((float)i, (float)j, (float)k, 1.0f);
+				glm::vec3 tmp = glm::vec3(i, j, k);
+
+				float l = glm::length(tmp - c) + glm::length(tmp-c2);
+				float s = 1.0f / 512.0f;
+				glm::vec4 v = l < r && i > w/2 ? s * val * l : glm::vec4(glm::vec3(0.0f), 0.0f);
+				//glm::vec4 v = l < r ? s*val*l : s*glm::vec4(tmp,1.0f);
 				texture.SetValue(i, j, k, v);
 			}
 		}

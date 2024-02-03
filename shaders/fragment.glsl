@@ -1,4 +1,5 @@
 #version 330 core
+
 in vec4 position;
 // in vec2 uv;
 // in vec3 norm;
@@ -195,12 +196,14 @@ vec4 mean_tex_ray_scattered(vec3 origin, vec3 ray, vec3 lightpos, float step, sa
 {
     vec4 res = vec4(0.0f);
     int n_steps = 1;
-    for (vec3 t = origin; length(t-origin) < 20.0f; t += ray * step)
+    for (vec3 t = origin; length(t-origin) < 100.0f; t += ray * step)
     {
-        vec3 lightdir = normalize(lightpos - t);
-        vec4 l = mean_tex_ray(t, lightdir, 5.0f, tex);
-        float m = 1.0f / length(l);
-        res += mix(l, texture(tex, t / 20.0f), m);
+        vec3 lightvec = lightpos - t;
+        float lightdist = length(lightvec) +0.001f;
+        vec3 lightdir = normalize(lightvec);
+        vec4 l = mean_tex_ray(t, lightdir, 1.0f, tex); // Contribution to luminance from light source
+        float m = 200.0f / lightdist;
+        res += m * texture(tex, t / 100.0f);//mix(m*l, texture(tex, t / 30.0f), 0.5f);
         n_steps++;
     }
     return res / n_steps;
@@ -213,9 +216,9 @@ void main()
     vec3 ray = normalize(position.x * aspect * cross(cam_forward, cam_up) + position.y * cam_up + cam_forward);
     //vec3 ray2;
     vec3 dest;
-    vec4 val = mean_tex_ray_scattered(cam_pos, ray,vec3(10.0f*sin(50.0f*time), 0.0f, 0.0f), 0.5f, tex);
-            //sdfmarch(cam_pos, ray, dest, 100, 0.01f); 
-            //marchRayDensity(cam_pos, ray, dest, 0.025f);
+    vec4 val = mean_tex_ray_scattered(cam_pos, ray, vec3(40.0f * sin(100.0f * time), 20.0f, 20.0f), 0.25f, tex); 
+        //marchRayDensity(cam_pos, ray, dest, 0.025f);
+        //sdfmarch(cam_pos, ray, dest, 100, 0.01f);
     //ray2 = normalize(dest-lightPos);
     //float occlusion = integrateRayDensity(dest, ray2, 1.0f);
     //vec3 fragLight = dest.xyz * (1.0f-val)*0.5f;
