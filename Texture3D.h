@@ -20,6 +20,15 @@ public:
 	void Load();
 	void Free();
 	void SetValue(const unsigned int& i, const unsigned int& j, const unsigned int& k, glm::vec4& value);
+	template <typename T>
+	void SetData(std::vector<T>& d)
+	{
+		data.clear();
+		for (int i = 0; i < d.size(); i++)
+		{
+			data.push_back((GLfloat)d[i]);
+		}
+	}
 	~Texture3D() {
 		if (h_texture3D >= 0)
 			Free();

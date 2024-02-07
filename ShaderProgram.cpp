@@ -31,9 +31,9 @@ void ShaderProgram::Init()
 	if (!success)
 	{
 		glGetShaderInfoLog(m_fragmentShader.GetShaderHandle(), 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+		std::cout << "SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
-	std::cout << "SHader Compilation successful" << std::endl;
+	std::cout << "Shader compilation successful" << std::endl;
 }
 ShaderProgram& ShaderProgram::Use()
 {

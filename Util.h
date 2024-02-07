@@ -1,15 +1,14 @@
 #pragma once
-#include <glm.hpp>
-#include <gtc/quaternion.hpp>
 #include <string>
+#include <fstream>
 #include <iostream>
 #include <vector>
 std::string read_file(std::string& filepath);
 
 template <typename T>
-std::vector<T> read_file_raw(std::string& filepath)
+std::vector<T> read_file_raw(std::string filepath)
 {
-	std::ifstream file(filepath, std::ios::binary);
+	std::ifstream file = std::ifstream(filepath, std::ios::binary);
 	std::vector<T> res;
 	if (!file.is_open())
 	{

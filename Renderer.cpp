@@ -1,11 +1,13 @@
 #include "Renderer.h"
 #include "Model.h"
+#include <stdint.h>
+#include "Util.h"
 Renderer::Renderer() : rootVolume(Quad(glm::vec3(-1.0f, 1.0f, 0.5f), 
 										glm::vec3(1.0f, 1.0f, 0.5f), 
 										glm::vec3(1.0f, -1.0f, 0.5f), 
 										glm::vec3(-1.0f, -1.0f, 0.5f))), 
 						m_sceneObjects({}),
-						texture(Texture3D(255, 255, 255))
+						texture(Texture3D(256, 256, 109))
 {
 	FragmentShader fs = FragmentShader(ShaderPath("shaders/fragment.glsl"));
 	//std::cout << fs.GetSource() << std::endl;
@@ -52,29 +54,74 @@ void Renderer::Init()
 	m_shader.Init();
 	m_shader.Use();
 	texture.RenderInit();
-	const int w = 255; const int h = 255; const int d = 255;
-	float ecc = 30;
-	glm::vec3 c = glm::vec3(w/ecc, h/2.0f, h/2.0f);
-	glm::vec3 c2 = glm::vec3(w - w/ecc, h/2.0f, h/2.0f);
-	float r = 255;
-	glm::vec4 val = glm::vec4(1.0f);
-	for (int i = 0; i < w; i++)
-	{
-		for (int j = 0; j < h; j++)
-		{
-			for (int k = 0; k < d; k++)
-			{
-				glm::vec3 tmp = glm::vec3(i, j, k);
+	std::string path = "resources/textures/volume/MRbrain/data.dat";
+	std::vector<int16_t> volumedata = read_file_raw<int16_t>(path);
+	std::vector<float> floatdata = std::vector<float>();
 
-				float l = glm::length(tmp - c) + glm::length(tmp-c2);
-				float s = 1.0f / 512.0f;
-				glm::vec4 v = l < r && i > w/2 ? s * val * l : glm::vec4(glm::vec3(0.0f), 0.0f);
-				//glm::vec4 v = l < r ? s*val*l : s*glm::vec4(tmp,1.0f);
-				texture.SetValue(i, j, k, v);
+	std::int16_t max_vol_data = 1;
+	if (volumedata.size() > 0)
+	{
+		std::cout << "Read " << volumedata.size() * sizeof(int16_t) << " bytes from " << path << std::endl;
+		for (int i = 0; i < volumedata.size(); i++)
+		{
+			volumedata[i] =  (0x00FF & (volumedata[i] >> 8)) | (0xFF00 & (volumedata[i] << 8));
+			if (volumedata[i] > max_vol_data)
+			{
+				max_vol_data = volumedata[i];
 			}
 		}
+
+		for (int i = 0; i < volumedata.size(); i++)
+		{
+			float v = (float)volumedata[i] / max_vol_data;
+			if (v > 0.3f && v < 0.4)
+			{
+				floatdata.push_back(1.0f);
+				floatdata.push_back(0.0f);
+				floatdata.push_back(1.0f);
+				floatdata.push_back(1.0f);
+			}
+			else if (v > 0.4 && v < 0.5)
+			{
+				floatdata.push_back(0.0f);
+				floatdata.push_back(0.0f);
+				floatdata.push_back(1.0f);
+				floatdata.push_back(1.0f);
+			}
+			else if (v > 0.5)
+			{
+				floatdata.push_back(0.0f);
+				floatdata.push_back(1.0f);
+				floatdata.push_back(1.0f);
+				floatdata.push_back(1.0f);
+			}
+			else
+			{
+				floatdata.push_back(1.0f);
+				floatdata.push_back(1.0f);
+				floatdata.push_back(1.0f);
+				floatdata.push_back(1.0f);
+			}
+		}
+		std::cout << std::endl;
+		std::cout << "Head of " << path << ": ";
+		for (int i = 0; i < 100; i++)
+		{
+			std::cout << floatdata[i] << " ";
+		}
+		std::cout << std::endl;
+		 
 	}
-	
+	else
+	{
+		std::cerr << "Unable to read file: " << path << std::endl;
+	}
+		
+	const int w = 256; const int h = 256; const int d = 109;
+	if (volumedata.size() != w * h * d)
+		std::cerr << "Expected " << w * h * d * sizeof(int16_t)
+				  << " bytes; Read " << volumedata.size() * sizeof(int16_t) << std::endl;
+	texture.SetData(floatdata);
 	texture.Load();
 	texture.Bind(m_shader, "tex", GL_TEXTURE0);
 	

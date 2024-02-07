@@ -151,13 +151,13 @@ float integrateRayDensity(vec3 origin, vec3 ray, float step)
 }
 
 // Integrate texture over ray
-vec4 mean_tex_ray(vec3 origin, vec3 ray, float step, sampler3D tex)
+vec4 mean_tex_ray(vec3 origin, vec3 ray, float step, float viewdist, sampler3D tex)
 {
     vec4 res = vec4(0.0f);
     int n_steps = 1;
-    for (vec3 t = origin; length(t-origin) < 20.0f; t += ray * step)
+    for (vec3 s = origin; length(s-origin) < viewdist; s += ray * step)
     {
-        res += texture(tex, t/20.0f);
+        res += texture(tex, s / viewdist);
         n_steps++;
     }
     return res / n_steps;
@@ -192,18 +192,19 @@ float sdfmarch(vec3 origin, vec3 ray, out vec3 dest, int maxiter, float epsilon)
     return i / maxiter;
 }
 
-vec4 mean_tex_ray_scattered(vec3 origin, vec3 ray, vec3 lightpos, float step, sampler3D tex)
+// TODO: Viewdist and step are dual to each other, so it's not necessary to renormalize twice. maxiter -> 1, decrease step to compensate
+vec4 mean_tex_ray_scattered(vec3 origin, vec3 ray, vec3 lightpos, float step, float viewdist, sampler3D tex)
 {
     vec4 res = vec4(0.0f);
     int n_steps = 1;
-    for (vec3 t = origin; length(t-origin) < 100.0f; t += ray * step)
+    for (vec3 t = origin; length(t-origin) < viewdist; t += ray * step)
     {
-        vec3 lightvec = lightpos - t;
-        float lightdist = length(lightvec) +0.001f;
-        vec3 lightdir = normalize(lightvec);
-        vec4 l = mean_tex_ray(t, lightdir, 1.0f, tex); // Contribution to luminance from light source
-        float m = 200.0f / lightdist;
-        res += m * texture(tex, t / 100.0f);//mix(m*l, texture(tex, t / 30.0f), 0.5f);
+        vec3 light_vec = lightpos - t;
+        vec4 light_color = mean_tex_ray(t, normalize(light_vec), step*10.0f, viewdist/4.0f, tex); // Contribution to luminance from light source
+        float luminance = 1.0f / (dot(light_vec, light_vec)/10.0f + 0.001f);
+        vec4 scatter_color = texture(tex, vec3(1.0f, 1.0f, 2.0f)*(t / viewdist));
+        //res += luminance * scatter_color;
+        res += luminance * light_color * scatter_color + vec4(vec3(0.1f), 1.0f) * scatter_color;
         n_steps++;
     }
     return res / n_steps;
@@ -213,10 +214,10 @@ void main()
 {
     float aspect = 1920.0f / 1080.0f;
     // ray sphere at camera
-    vec3 ray = normalize(position.x * aspect * cross(cam_forward, cam_up) + position.y * cam_up + cam_forward);
+    vec3 ray = (position.x * aspect * cross(cam_forward, cam_up) + position.y * cam_up + cam_forward);
     //vec3 ray2;
     vec3 dest;
-    vec4 val = mean_tex_ray_scattered(cam_pos, ray, vec3(40.0f * sin(100.0f * time), 20.0f, 20.0f), 0.25f, tex); 
+    vec4 val = mean_tex_ray_scattered(cam_pos, ray, vec3(5.0f*sin(100.0f * time)+10.0f, 5.0*cos(100.0f * time)+10.0f, 5.0f), 0.125f, 20, tex);
         //marchRayDensity(cam_pos, ray, dest, 0.025f);
         //sdfmarch(cam_pos, ray, dest, 100, 0.01f);
     //ray2 = normalize(dest-lightPos);
