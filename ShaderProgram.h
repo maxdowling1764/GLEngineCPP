@@ -27,7 +27,7 @@ private:
 	VertexShader m_vertexShader;
 	FragmentShader m_fragmentShader;
 
-	unsigned int m_programHandle;
+	unsigned int m_programHandle = 0;
 	void attach();
 	void link();
 };

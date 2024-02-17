@@ -65,8 +65,6 @@ void CoreEngine::processInput(GLFWwindow* window)
 	m_renderer.GetActiveCamera()->SetUp(cam_up);
 }
 
-
-
 void CoreEngine::UpdateJuliaPos()
 {
 	int h;

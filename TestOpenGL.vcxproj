@@ -167,10 +167,12 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CoreEngine.h" />
     <ClInclude Include="FragmentShader.h" />
+    <ClInclude Include="DefaultShaderProgram.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelParser.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SceneObject.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />
@@ -179,12 +181,15 @@
     <ClInclude Include="VAOLoader.h" />
     <ClInclude Include="VertexShader.h" />
     <ClInclude Include="VolumeElement.h" />
+    <ClInclude Include="VolumetricShaderProgram.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\fragment.glsl" />
-    <None Include="shaders\vertex.glsl" />
+    <None Include="shaders\polygon\fragment.glsl" />
+    <None Include="shaders\polygon\vertex.glsl" />
+    <None Include="shaders\volumetric\fragment.glsl" />
+    <None Include="shaders\volumetric\vertex.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

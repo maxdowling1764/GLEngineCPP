@@ -1,10 +1,6 @@
 #version 330 core
 
 in vec4 position;
-// in vec2 uv;
-// in vec3 norm;
-
-// uniform mat4 projectionMatrix;
 uniform sampler3D tex;
 uniform vec3 cam_up;
 uniform vec3 cam_forward;

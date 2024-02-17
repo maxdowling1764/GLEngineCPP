@@ -14,6 +14,7 @@ void Shader::Init()
 	glShaderSource(m_shaderHandle, 1, &csrc, NULL);
 	glCompileShader(m_shaderHandle);
 }
+
 std::string Shader::GetSource()
 {
 	return m_src;

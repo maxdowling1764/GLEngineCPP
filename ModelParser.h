@@ -12,5 +12,4 @@ namespace ModelParser
 	};
 }
 
-
 Mesh parse_obj(std::string& objPath);

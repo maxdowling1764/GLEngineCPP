@@ -2,18 +2,15 @@
 #include "Model.h"
 #include <stdint.h>
 #include "Util.h"
+#include "VolumetricShaderProgram.h"
 Renderer::Renderer() : rootVolume(Quad(glm::vec3(-1.0f, 1.0f, 0.5f), 
 										glm::vec3(1.0f, 1.0f, 0.5f), 
 										glm::vec3(1.0f, -1.0f, 0.5f), 
 										glm::vec3(-1.0f, -1.0f, 0.5f))), 
 						m_sceneObjects({}),
-						texture(Texture3D(256, 256, 109))
+						texture(Texture3D(256, 256, 109)),
+						m_shader(VolumetricShaderProgram())
 {
-	FragmentShader fs = FragmentShader(ShaderPath("shaders/fragment.glsl"));
-	//std::cout << fs.GetSource() << std::endl;
-	VertexShader vs = VertexShader(ShaderPath("shaders/vertex.glsl"));
-	//std::cout << vs.GetSource() << std::endl;
-	m_shader = ShaderProgram(vs, fs);
 	m_loader = VAOLoader();
 	m_juliaPos = glm::vec2(1.0f, 0.0f);
 	m_activeCamera = Camera();

@@ -7,8 +7,6 @@ struct Vertex
 layout (location = 0) in vec3 v;
 
 uniform mat4 projection;
-// uniform mat4 view;
-// uniform mat4 model;
 
 out vec4 position;
 
