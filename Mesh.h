@@ -24,19 +24,17 @@ struct Texture
 */
 class Mesh
 {
+private:
+	unsigned int m_vaoID;
+	unsigned int ebo;
 public:
 	std::vector<Vertex> m_vertices;
 	std::vector<unsigned int> m_indices;	// Face indices
 	std::vector<Texture> m_textures;
 	unsigned int m_vao;
 	unsigned int m_vbo;
-	/*
-	* Default Constructor
-	*/
-	Mesh() :m_vertices({}), m_indices({}), m_textures({}), m_vao(0), m_vbo(0)
-	{
 
-	};
+	Mesh() :m_vertices({}), m_indices({}), m_textures({}), m_vao(0), m_vbo(0) {};
 
 	Mesh(std::vector<glm::vec3>& positions, 
 		std::vector<unsigned int>& indices) : Mesh()
@@ -57,9 +55,7 @@ public:
 		m_textures = {};
 	}
 
-	Mesh(std::vector<Vertex>& verts, 
-		std::vector<unsigned int>& indices, 
-		std::vector<Texture>& textures) : Mesh()
+	Mesh(std::vector<Vertex>& verts, std::vector<unsigned int>& indices, std::vector<Texture>& textures) : Mesh()
 	{
 		m_vertices = verts;
 		m_indices = indices;
@@ -70,20 +66,4 @@ public:
 	void Init();
 	unsigned int GetVAOId() { return m_vaoID; };
 	void SetVAOId(unsigned int vao) { m_vaoID = vao; };
-
-private:
-	/*
-	* Need to store a reference to loader instance
-	*/
-
-	unsigned int m_vaoID;
-	unsigned int ebo;
 };
-//class GeometryLoader
-//{
-//public:
-//	Enable
-//private:
-//	std::vector<int> vaos;
-//	std::vector<int> vbos;
-//};
