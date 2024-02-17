@@ -16,7 +16,7 @@ public:
 		p_data = data.data();	
 	};
 	void RenderInit(); // On GL Context Init
-	void Bind(ShaderProgram& shader, const char* id, GLenum slot);
+	void Bind(ShaderProgram* shader, const char* id, GLenum slot);
 	void Load();
 	void Free();
 	void SetValue(const unsigned int& i, const unsigned int& j, const unsigned int& k, glm::vec4& value);

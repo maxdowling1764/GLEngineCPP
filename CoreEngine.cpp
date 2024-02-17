@@ -65,17 +65,6 @@ void CoreEngine::processInput(GLFWwindow* window)
 	m_renderer.GetActiveCamera()->SetUp(cam_up);
 }
 
-void CoreEngine::UpdateJuliaPos()
-{
-	int h;
-	int w;
-	double xpos, ypos;
-	glfwGetCursorPos(m_window.GetWindowHandle(), &xpos, &ypos);
-	glfwGetFramebufferSize(m_window.GetWindowHandle(), &w, &h);
-	m_renderer.SetJuliaPos(glm::vec2(2.0f*(xpos / w) - 1.0f, 2.0f*(ypos / h) - 1.0f));
-	//std::cout << "Mouse Position: " << xpos/w << ", " << ypos/h << std::endl;
-}
-
 void CoreEngine::loop()
 {
 	m_renderer.Init();
@@ -85,7 +74,6 @@ void CoreEngine::loop()
 		processInput(m_window.GetWindowHandle());
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-		UpdateJuliaPos();
 		m_time += DT;
 		m_renderer.Update(m_time, DT);
 		// Render Here 

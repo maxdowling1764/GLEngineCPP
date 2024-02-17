@@ -29,10 +29,10 @@ void Texture3D::Free()
 /*
 * Pre: &shader is the most recent instance of ShaderProgram to have called ShaderProgram::Use()
 */
-void Texture3D::Bind(ShaderProgram& shader, const char* textureName, GLenum slot)
+void Texture3D::Bind(ShaderProgram* shader, const char* textureName, GLenum slot)
 {
 	// Bind the 3D texture to the shader program
-	shader.u_Set1i(textureName, 0);
+	shader->u_Set1i(textureName, 0);
 	glActiveTexture(slot);
 	glBindTexture(GL_TEXTURE_3D, h_texture3D);
 }

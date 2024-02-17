@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -148,6 +148,7 @@
     <ClCompile Include="..\glad\src\glad.c" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CoreEngine.cpp" />
+    <ClCompile Include="PolygonShaderProgram.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Model.cpp" />
@@ -159,7 +160,8 @@
     <ClCompile Include="Texture3D.cpp" />
     <ClCompile Include="Util.cpp" />
     <ClCompile Include="VAOLoader.cpp" />
-    <ClCompile Include="VolumeElement.cpp" />
+    <ClCompile Include="Quad.cpp" />
+    <ClCompile Include="VolumetricShaderProgram.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
@@ -167,7 +169,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CoreEngine.h" />
     <ClInclude Include="FragmentShader.h" />
-    <ClInclude Include="DefaultShaderProgram.h" />
+    <ClInclude Include="PolygonShaderProgram.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelParser.h" />
@@ -180,7 +182,7 @@
     <ClInclude Include="Util.h" />
     <ClInclude Include="VAOLoader.h" />
     <ClInclude Include="VertexShader.h" />
-    <ClInclude Include="VolumeElement.h" />
+    <ClInclude Include="Quad.h" />
     <ClInclude Include="VolumetricShaderProgram.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="World.h" />

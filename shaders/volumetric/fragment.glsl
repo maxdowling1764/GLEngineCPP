@@ -15,7 +15,7 @@ float lightIntensity = 100.0f;
 vec4 i_hat = vec4(0.0f, 1.0f, 0.0f, 0.0f);
 vec4 j_hat = vec4(0.0f, 0.0f, 1.0f, 0.0f);
 vec4 k_hat = vec4(0.0f, 0.0f, 0.0f, 1.0f);
-uniform vec2 julia_pos;
+vec2 julia_pos = vec2(1.0, 1.0);
 uniform float time;
 
 vec4 quat_mult(vec4 a, vec4 b)
@@ -210,7 +210,7 @@ void main()
 {
     float aspect = 1920.0f / 1080.0f;
     // ray sphere at camera
-    vec3 ray = (position.x * aspect * cross(cam_forward, cam_up) + position.y * cam_up + cam_forward);
+    vec3 ray = normalize(position.x * aspect * cross(cam_forward, cam_up) + position.y * cam_up + cam_forward);
     //vec3 ray2;
     vec3 dest;
     vec4 val = mean_tex_ray_scattered(cam_pos, ray, vec3(5.0f*sin(100.0f * time)+10.0f, 5.0*cos(100.0f * time)+10.0f, 5.0f), 0.125f, 20, tex);

@@ -11,7 +11,7 @@ ShaderProgram::ShaderProgram(VertexShader vs, FragmentShader fs):m_vertexShader(
 
 }
 
-void ShaderProgram::Init()
+void ShaderProgram::RenderInit()
 {
 	m_programHandle = glCreateProgram();
 	m_vertexShader.Init();

@@ -8,23 +8,16 @@ Renderer::Renderer() : rootVolume(Quad(glm::vec3(-1.0f, 1.0f, 0.5f),
 										glm::vec3(1.0f, -1.0f, 0.5f), 
 										glm::vec3(-1.0f, -1.0f, 0.5f))), 
 						m_sceneObjects({}),
-						texture(Texture3D(256, 256, 109)),
-						m_shader(VolumetricShaderProgram())
+						texture(Texture3D(256, 256, 109))
 {
 	m_loader = VAOLoader();
-	m_juliaPos = glm::vec2(1.0f, 0.0f);
 	m_activeCamera = Camera();
+	m_shader = new VolumetricShaderProgram(m_activeCamera);
 }
 
 void Renderer::Render()
 {
-	rootVolume.Render(m_shader);
-}
-
-void Renderer::SetJuliaPos(const glm::vec2& p)
-{
-	m_juliaPos = glm::vec2(p);
-	m_shader.u_SetVec2("julia_pos", p);
+	rootVolume.Render(*m_shader);
 }
 
 void Renderer::SetActiveCamera(Camera& cam)
@@ -39,17 +32,13 @@ Camera* Renderer::GetActiveCamera()
 
 void Renderer::Update(const float& time, const float& dt)
 {
-	m_shader.u_SetFloat("time", time);
-	m_shader.u_SetVec2("julia_pos", m_juliaPos); 
-	m_shader.u_SetVec3("cam_forward", m_activeCamera.GetForward());
-	m_shader.u_SetVec3("cam_up", m_activeCamera.GetUp());
-	m_shader.u_SetVec3("cam_pos", m_activeCamera.GetPosition());
+	m_shader->Update(time, dt);
 }
 
 void Renderer::Init()
 {
-	m_shader.Init();
-	m_shader.Use();
+	m_shader->RenderInit();
+	m_shader->Use();
 	texture.RenderInit();
 	std::string path = "resources/textures/volume/MRbrain/data.dat";
 	std::vector<int16_t> volumedata = read_file_raw<int16_t>(path);
@@ -121,17 +110,9 @@ void Renderer::Init()
 	texture.SetData(floatdata);
 	texture.Load();
 	texture.Bind(m_shader, "tex", GL_TEXTURE0);
-	
-
-	m_shader.u_SetVec2("julia_pos", m_juliaPos);
-	m_shader.u_SetVec3("cam_pos", m_activeCamera.GetPosition());
-	m_shader.u_SetVec3("cam_forward", m_activeCamera.GetForward());
-	m_shader.u_SetVec3("cam_up", m_activeCamera.GetUp());
-	m_shader.u_SetMat4("projection", glm::ortho(-1.0f, 1.0f, 1.0f, -1.0f, 0.0f, -100.0f));
+	m_shader->InitUniforms();
 	glEnable(GL_BLEND);
-	
 	rootVolume.Init(m_loader);
-	
 }
 
 void Renderer::Cleanup()
