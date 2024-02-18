@@ -23,7 +23,7 @@ public:
 	unsigned int createVBO(unsigned int target);
 
 	/*
-	* Note: Don't forget to unbind vboid from target after uploadingqa
+	* Note: Don't forget to unbind vboid from target after uploading
 	*/
 	template <typename T>
 	void uploadToVBO(unsigned int vboid, GLuint target, std::vector<T> data, GLuint usage)
