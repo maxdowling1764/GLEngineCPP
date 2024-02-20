@@ -23,7 +23,7 @@ public:
 	void Init();
 	void Update();
 	void Start();
-
+	glm::mat4& GetTransform();
 private:
 	void updateTransform();
 	glm::vec3 m_position;

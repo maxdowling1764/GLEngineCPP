@@ -26,10 +26,12 @@ public:
 	void Cleanup();
 private:
 	Quad rootVolume;
-	std::vector<SceneObject*> m_sceneObjects;
+	std::vector<SceneObject> m_sceneObjects;
 	Texture3D texture;
 	ShaderProgram* m_shader;
 	VAOLoader m_loader;
 	Camera m_activeCamera;
+	Model m_model;
+	Mesh m_mesh;
 };
 

@@ -28,7 +28,7 @@ private:
 	unsigned int m_vaoID;
 	unsigned int ebo;
 public:
-	std::vector<Vertex> m_vertices;
+	std::vector<glm::vec3> m_vertices;
 	std::vector<unsigned int> m_indices;	// Face indices
 	std::vector<Texture> m_textures;
 	unsigned int m_vao;
@@ -36,18 +36,7 @@ public:
 
 	Mesh() :m_vertices({}), m_indices({}), m_textures({}), m_vao(0), m_vbo(0) {};
 
-	Mesh(std::vector<glm::vec3>& positions, 
-		std::vector<unsigned int>& indices) : Mesh()
-	{
-		for (int i = 0; i < positions.size(); i++)
-		{
-			m_vertices.push_back(Vertex(positions[i]));
-		}
-		m_indices = indices;
-		m_textures = {};
-	};
-
-	Mesh(std::vector<Vertex>& verts,
+	Mesh(std::vector<glm::vec3>& verts,
 		std::vector<unsigned int>& indices) :Mesh()
 	{
 		m_vertices = verts;
@@ -55,7 +44,7 @@ public:
 		m_textures = {};
 	}
 
-	Mesh(std::vector<Vertex>& verts, std::vector<unsigned int>& indices, std::vector<Texture>& textures) : Mesh()
+	Mesh(std::vector<glm::vec3>& verts, std::vector<unsigned int>& indices, std::vector<Texture>& textures) : Mesh()
 	{
 		m_vertices = verts;
 		m_indices = indices;

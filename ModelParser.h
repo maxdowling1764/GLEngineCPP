@@ -10,6 +10,8 @@ namespace ModelParser
 	{
 		VERT, FACE, NONE
 	};
+	bool parse_vertex(std::istringstream& s, glm::vec3& dest);
+	bool parse_face(std::istringstream& s, Mesh& dest);
+	bool parse_obj(std::string& objPath, Mesh& m);
 }
 
-Mesh parse_obj(std::string& objPath);

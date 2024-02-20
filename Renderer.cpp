@@ -3,21 +3,35 @@
 #include <stdint.h>
 #include "Util.h"
 #include "VolumetricShaderProgram.h"
-Renderer::Renderer() : rootVolume(Quad(glm::vec3(-1.0f, 1.0f, 0.5f), 
-										glm::vec3(1.0f, 1.0f, 0.5f), 
-										glm::vec3(1.0f, -1.0f, 0.5f), 
-										glm::vec3(-1.0f, -1.0f, 0.5f))), 
-						m_sceneObjects({}),
-						texture(Texture3D(256, 256, 109))
+#include "PolygonShaderProgram.h"
+#include "ModelParser.h"
+
+Renderer::Renderer() : 
+	rootVolume(Quad(glm::vec3(-1.0f, 1.0f, 0.5f),
+					glm::vec3(1.0f, 1.0f, 0.5f),
+					glm::vec3(-1.0f, -1.0f, 0.5f),
+					glm::vec3(1.0f, -1.0f, 0.5f))),
+	m_sceneObjects({}),
+	texture(Texture3D(256, 256, 109)),
+	m_loader(VAOLoader()),
+	m_activeCamera(Camera()),
+	m_shader(new PolygonShaderProgram(m_activeCamera)),
+	m_mesh(Mesh())
 {
-	m_loader = VAOLoader();
-	m_activeCamera = Camera();
-	m_shader = new VolumetricShaderProgram(m_activeCamera);
+	std::string meshpath = "resources/models/suzzanne.obj";
+	
+	ModelParser::parse_obj(meshpath, m_mesh);
+	m_model = Model(m_mesh);
+	
 }
 
 void Renderer::Render()
 {
-	rootVolume.Render(*m_shader);
+	glEnable(GL_DEPTH_TEST);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	m_model.Render(*m_shader);
+	//rootVolume.Render(*m_shader);
 }
 
 void Renderer::SetActiveCamera(Camera& cam)
@@ -40,7 +54,9 @@ void Renderer::Init()
 	m_shader->RenderInit();
 	m_shader->Use();
 	texture.RenderInit();
+	
 	std::string path = "resources/textures/volume/MRbrain/data.dat";
+
 	std::vector<int16_t> volumedata = read_file_raw<int16_t>(path);
 	std::vector<float> floatdata = std::vector<float>();
 
@@ -93,7 +109,7 @@ void Renderer::Init()
 		std::cout << "Head of " << path << ": ";
 		for (int i = 0; i < 100; i++)
 		{
-			std::cout << floatdata[i] << " ";
+			std::cout << volumedata[i] << " ";
 		}
 		std::cout << std::endl;
 		 
@@ -112,7 +128,8 @@ void Renderer::Init()
 	texture.Bind(m_shader, "tex", GL_TEXTURE0);
 	m_shader->InitUniforms();
 	glEnable(GL_BLEND);
-	rootVolume.Init(m_loader);
+	
+	m_model.Init(m_loader);
 }
 
 void Renderer::Cleanup()

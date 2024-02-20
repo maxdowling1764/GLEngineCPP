@@ -46,9 +46,14 @@ glm::vec3& Camera::GetUp()
 {
 	return m_up;
 }
+glm::mat4& Camera::GetTransform()
+{
+	return m_transform;
+}
 
 void Camera::updateTransform()
 {
-	glm::mat4 t = glm::lookAt(m_position, m_forward, m_up);
+	glm::mat4 t = glm::lookAt(m_position, m_position + m_forward, m_up);
+	
 	this->SetTransform(t);
 }

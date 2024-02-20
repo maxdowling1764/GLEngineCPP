@@ -9,7 +9,6 @@ private:
 	std::vector<unsigned int> vbos;
 	std::vector<unsigned int> ebos;
 
-public:
 	/*
 	* Create a VAO and return the id of it
 	* Side Effect: push_back id into vaos
@@ -52,7 +51,7 @@ public:
 		glBindVertexArray(0);
 	}
 	template<typename T>
-	Mesh loadToVAO(std::vector<T> data, std::vector<unsigned int> indices)
+	bool loadToVAO(std::vector<T> data, std::vector<GLuint> indices, Mesh& r)
 	{
 		unsigned int vao = createVAO();
 		unsigned int vbo = createVBO(GL_ELEMENT_ARRAY_BUFFER);
@@ -64,26 +63,25 @@ public:
 		glBindVertexArray(vao);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(T), &data[0], GL_STATIC_DRAW);
-		
+
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), 
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int),
 			&indices[0], GL_STATIC_DRAW);
-		
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(T), (void*)0);
+
 		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(T), (void*)0);
+		
 		glBindVertexArray(0);
-		Mesh r = Mesh(data, indices);
 		r.m_vao = vao;
 		r.m_vbo = vbo;
 
-		r.SetVAOId(vaos.size()-1);
-		return r;
+		r.SetVAOId(vaos.size() - 1);
+		return true;
 	}
-
-	Mesh& LoadMesh(Mesh& m)
+public:
+	bool LoadMesh(Mesh& m)
 	{
-		m = loadToVAO(m.m_vertices, m.m_indices);
-		return m;
+		return loadToVAO(m.m_vertices, m.m_indices, m);
 	}
 };
 
