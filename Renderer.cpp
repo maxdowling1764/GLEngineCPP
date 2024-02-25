@@ -18,7 +18,7 @@ Renderer::Renderer() :
 	m_shader(new PolygonShaderProgram(m_activeCamera)),
 	m_mesh(Mesh())
 {
-	std::string meshpath = "resources/models/suzzanne.obj";
+	std::string meshpath = "resources/models/smooth_suzzanne.obj";
 	
 	mesh_is_loaded = ModelParser::parse_obj(meshpath, m_mesh);
 	m_model = Model(m_mesh);

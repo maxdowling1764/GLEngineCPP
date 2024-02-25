@@ -8,7 +8,7 @@ void Model::Init(VAOLoader& loader)
 	}
 	else
 	{
-		std::cout << "Loaded mesh to VAOId: " << m_mesh.GetVAOId() << " | VBOId: " << m_mesh.m_vbo << std::endl;
+		std::cout << "Loaded mesh to VAOId: " << m_mesh.vao << " | VBOId: " << m_mesh.vbo << std::endl;
 	}
 }
 

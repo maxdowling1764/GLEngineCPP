@@ -34,27 +34,28 @@ struct Texture
 class Mesh
 {
 private:
-	unsigned int m_vaoID;
 	unsigned int ebo;
-	std::vector<Vertex> m_vertices;
-	std::vector<unsigned int> m_indices;	// Face indices
-	std::vector<Texture> m_textures;
+	std::vector<Vertex> vertices;
+	std::vector<unsigned int> indices;	// Face indices
+	std::vector<Texture> textures;
 
 	bool is_loaded = false;
 
 public:
-	unsigned int m_vao;
-	unsigned int m_vbo;
+	unsigned int vao;
+	unsigned int vbo;
 
-	Mesh() : m_vertices({}), m_indices({}), m_textures({}), m_vao(0), m_vbo(0) {};
+	Mesh() : vertices({}), indices({}), textures({}), vao(0), vbo(0), ebo(0) {};
 
 	Mesh(std::vector<Vertex>& vertices, std::vector<Index>& indices) 
-		: m_vertices(vertices), m_indices(std::vector<unsigned int>()), m_vao(0), m_vbo(0) 
+	: vertices(vertices), indices(std::vector<unsigned int>()), 
+		textures(std::vector<Texture>()),
+		vao(0), vbo(0), ebo(0)
 	{
 		unsigned int i = 0;
 		for (const Vertex &vertex : vertices)
 		{
-			m_indices.push_back(i);
+			this->indices.push_back(i);
 			i++;
 		}
 	};
@@ -63,23 +64,21 @@ public:
 	{
 		for (int i = 0; i < verts.size(); i++)
 		{
-			m_vertices.push_back(Vertex(verts[i]));
+			vertices.push_back(Vertex(verts[i]));
 		}
-		m_indices = indices;
-		m_textures = textures;
+		this->indices = indices;
+		this->textures = textures;
 	};
 	
 	void Render(ShaderProgram& shader);
 	void Init();
-	unsigned int GetVAOId() { return m_vaoID; };
-	void SetVAOId(unsigned int vao) { m_vaoID = vao; };
 	
 	const std::vector<Vertex>& Vertices()
 	{
-		return m_vertices;
+		return vertices;
 	}
 	const std::vector<unsigned int>& Indices()
 	{
-		return m_indices;
+		return indices;
 	}
 };
