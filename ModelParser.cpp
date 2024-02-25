@@ -2,20 +2,29 @@
 #include <sstream> 
 using namespace std;
 
-ModelParser::TOKEN parse_token(std::string& token)
+ModelParser::Token parse_token(std::string& token)
 {
+
     if (token == "v")
     {
         return ModelParser::VERT;
+    }
+    else if (token == "vn")
+    {
+        return ModelParser::NORM_VERT;
+    }
+    else if (token == "vt")
+    {
+        return ModelParser::UV_VERT;
     }
     else if (token == "f")
     {
         return ModelParser::FACE;
     }
-    return ModelParser::NONE;
+    else return ModelParser::NONE;
 }
 
-bool ModelParser::parse_vertex(std::istringstream& s, glm::vec3& dest)
+bool ModelParser::parse_vec3(std::istringstream& s, glm::vec3& dest)
 {
     std::string curr_word;
     for (int i = 0; i < 3; i++)
@@ -24,6 +33,7 @@ bool ModelParser::parse_vertex(std::istringstream& s, glm::vec3& dest)
         {
             try
             {
+                
                 dest[i] = std::stof(curr_word);
             }
             catch (const std::invalid_argument& e)
@@ -46,17 +56,17 @@ bool ModelParser::parse_vertex(std::istringstream& s, glm::vec3& dest)
     return true;
 }
 
-bool ModelParser::parse_face(std::istringstream& s, Mesh& dest)
+bool ModelParser::parse_vec2(std::istringstream& s, glm::vec2& dest)
 {
     std::string curr_word;
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 2; i++)
     {
         if (s >> curr_word)
         {
             try
             {
-                /* subtract 1 since obj indices start at 1 instead of 0 */
-                dest.m_indices.push_back((unsigned int)std::stoi(curr_word) - 1);
+
+                dest[i] = std::stof(curr_word);
             }
             catch (const std::invalid_argument& e)
             {
@@ -71,13 +81,95 @@ bool ModelParser::parse_face(std::istringstream& s, Mesh& dest)
         }
         else
         {
-            std::cerr << "[-] Error parsing OBJ model face: Expected 3 indices, got " << i + 1 << std::endl;
+            std::cerr << "[-] Error parsing OBJ model vertex: Expected vec3, got vec" << i << std::endl;
+            return false;
+        }
+    }
+    return true;
+}
+
+bool ModelParser::parse_index(std::istringstream& s, Index& dest)
+{    
+    unsigned int curr_start = 0;
+    std::string substr;
+    int i = 0;
+    while(std::getline(s, substr, '/') && i < 3)
+    {
+        try
+        {
+            dest.indices[i++] = std::stoi(substr) - 1;
+        }
+        catch (const std::invalid_argument& e)
+        {
+            std::cerr << "[-] Invalid argument exception while parsing indices: Expected int, got \"" << substr << "\"" <<  std::endl;
+            return false;
+        }
+    }
+    return i == 3;
+}
+
+bool ModelParser::parse_face(std::istringstream& s, 
+                        const std::vector<glm::vec3>& vp, 
+                        const std::vector<glm::vec3>& vn,
+                        const std::vector<glm::vec2>& vt,
+                        std::vector<Vertex>& vertices,
+                        std::vector<Index>& indices)
+{
+    std::string curr_word;
+    int i = 0;
+
+    
+    while (s >> curr_word && i++ < 3)
+    {
+        try
+        {
+            Index curr_idx = Index();
+            std::istringstream index_stream(curr_word);
+            if (parse_index(index_stream, curr_idx)) 
+            {
+                unsigned int i_v, i_t, i_n;
+                i_v = curr_idx.indices[0];
+                i_t = curr_idx.indices[1];
+                i_n = curr_idx.indices[2];
+
+                if (i_v < vp.size() && i_n < vn.size() && i_t < vt.size()) 
+                {
+                    vertices.push_back(Vertex(vp[i_v], vn[i_n], vt[i_t]));
+                    
+                }
+                else
+                {
+                    std::cerr << "[-] Failed to parse face - Index out of range\n";
+                }
+            } 
+            else 
+            {
+                std::cerr << "[-] Failed to parse face - unexpected token: " 
+                            << curr_word << std::endl;
+                return false;
+            }
+        }
+        catch (const std::invalid_argument& e)
+        {
+            std::cerr << "[-] Invalid argument exception encountered while parsing OBJ model: " 
+                        << e.what() << std::endl;
+            return false;
+        }
+        catch (const std::out_of_range& e)
+        {
+            std::cerr << "[-] Out of range error encountered while parsing OBJ model: " 
+                        << e.what() << std::endl;
             return false;
         }
     }
 }
 
-bool ModelParser::parse_obj(std::string& objPath, Mesh& m)
+bool ModelParser::parse_obj(std::string& objPath,
+                            std::vector<glm::vec3>& vp,
+                            std::vector<glm::vec3>& vn,
+                            std::vector<glm::vec2>& vt,
+                            std::vector<Vertex>& vertices,
+                            std::vector<Index>& indices)
 {
     std::ifstream file(objPath);
 
@@ -87,30 +179,45 @@ bool ModelParser::parse_obj(std::string& objPath, Mesh& m)
     }
 
     std::string currentLine;
+    
+    
     while (std::getline(file, currentLine))
     {
         std::istringstream wordStream(currentLine);
         std::string currentWord;
-        ModelParser::TOKEN parserState = ModelParser::TOKEN::NONE;
+        ModelParser::Token parserState = Token::NONE;
         int n_expectedTokens = 0;
         while (wordStream >> currentWord)
         {
             parserState = parse_token(currentWord);
             switch (parserState)
             {
-            case ModelParser::VERT:
-                glm::vec3 v(0);
-                if (parse_vertex(wordStream, v))
-                {
-                    m.m_vertices.push_back(v);
-                }
-                else
+            case Token::VERT:
+                glm::vec3 vert(0);
+                if (!parse_vec3(wordStream, vert))
                 {
                     return false;
                 }
+                vp.push_back(vert);
                 break;
-            case ModelParser::FACE:
-                if (!parse_face(wordStream, m))
+            case Token::NORM_VERT:
+                glm::vec3 norm(0);
+                if (!parse_vec3(wordStream, norm))
+                {
+                    return false;
+                }
+                vn.push_back(norm);
+                break;
+            case Token::UV_VERT:
+                glm::vec2 tex(0);
+                if (!parse_vec2(wordStream, tex))
+                {
+                    return false;
+                }
+                vt.push_back(tex);
+                break;
+            case Token::FACE:
+                if (!parse_face(wordStream, vp, vn, vt, vertices, indices))
                 {
                     return false;
                 }
@@ -122,4 +229,16 @@ bool ModelParser::parse_obj(std::string& objPath, Mesh& m)
     }
     file.close();
     return true;
+}
+
+bool ModelParser::parse_obj(std::string& objpath, Mesh& m)
+{
+    std::vector<glm::vec3> vp = std::vector<glm::vec3>();
+    std::vector<glm::vec3> vn = std::vector<glm::vec3>();
+    std::vector<glm::vec2> vt = std::vector<glm::vec2>();
+    std::vector<Vertex> vertices = std::vector<Vertex>();
+    std::vector<Index> indices = std::vector<Index>();
+    bool res = parse_obj(objpath, vp, vn, vt, vertices, indices);
+    if (res) { m = Mesh(vertices, indices); }
+    return res;
 }

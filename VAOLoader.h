@@ -50,8 +50,7 @@ private:
 		glVertexAttribPointer(attribLocation, sizeof(T), GL_FLOAT, false, 0, (void*)0);
 		glBindVertexArray(0);
 	}
-	template<typename T>
-	bool loadToVAO(std::vector<T> data, std::vector<GLuint> indices, Mesh& r)
+	bool loadToVAO(const std::vector<Vertex>& data, const std::vector<GLuint>& indices, Mesh& r)
 	{
 		unsigned int vao = createVAO();
 		unsigned int vbo = createVBO(GL_ELEMENT_ARRAY_BUFFER);
@@ -62,15 +61,18 @@ private:
 
 		glBindVertexArray(vao);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(T), &data[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(Vertex), &data[0], GL_STATIC_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int),
 			&indices[0], GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(T), (void*)0);
-		
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
 		glBindVertexArray(0);
 		r.m_vao = vao;
 		r.m_vbo = vbo;
@@ -81,7 +83,7 @@ private:
 public:
 	bool LoadMesh(Mesh& m)
 	{
-		return loadToVAO(m.m_vertices, m.m_indices, m);
+		return loadToVAO(m.Vertices(), m.Indices(), m);
 	}
 };
 

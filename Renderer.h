@@ -33,5 +33,6 @@ private:
 	Camera m_activeCamera;
 	Model m_model;
 	Mesh m_mesh;
+	bool mesh_is_loaded = false;
 };
 

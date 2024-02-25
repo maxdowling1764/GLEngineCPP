@@ -11,7 +11,6 @@ public:
 	Quad(glm::vec3 topLeft, glm::vec3 topRight, glm::vec3 bottomLeft, glm::vec3 bottomRight) {
 
 		std::vector<glm::vec3> verts = { topLeft, topRight, bottomLeft, bottomRight};
-		std::vector<Vertex> meshVerts = {};
 		std::vector<Texture> textures = {};
 		std::vector<unsigned int> indices = 
 		{ 

@@ -17,7 +17,6 @@ int Window::Init()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	std::cout << "Test\n" << std::endl;
 
 	p_window = glfwCreateWindow(m_width, m_height, "Test", NULL, NULL);
 	if (p_window == NULL)

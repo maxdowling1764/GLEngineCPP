@@ -59,8 +59,6 @@ void CoreEngine::loop()
 	{
 		// Process Inputs
 		processInput(m_window.GetWindowHandle());
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
 		m_time += DT;
 		m_renderer.Update(m_time, DT);
 		// Render Here 

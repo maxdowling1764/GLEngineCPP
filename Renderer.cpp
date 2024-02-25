@@ -20,7 +20,7 @@ Renderer::Renderer() :
 {
 	std::string meshpath = "resources/models/suzzanne.obj";
 	
-	ModelParser::parse_obj(meshpath, m_mesh);
+	mesh_is_loaded = ModelParser::parse_obj(meshpath, m_mesh);
 	m_model = Model(m_mesh);
 	
 }
@@ -129,7 +129,11 @@ void Renderer::Init()
 	m_shader->InitUniforms();
 	glEnable(GL_BLEND);
 	
-	m_model.Init(m_loader);
+	if (mesh_is_loaded)
+	{
+		m_model.Init(m_loader);
+	}
+	
 }
 
 void Renderer::Cleanup()
