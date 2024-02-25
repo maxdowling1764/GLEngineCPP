@@ -12,3 +12,13 @@ void Mesh::Render(ShaderProgram& shader)
 void Mesh::Init()
 {
 }
+
+const std::vector<Vertex>& Mesh::Vertices()
+{
+    return vertices;
+}
+
+const std::vector<unsigned int>& Mesh::Indices()
+{
+    return indices;
+}

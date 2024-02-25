@@ -62,7 +62,9 @@ public:
 		}
 	};
 
-	Mesh(std::vector<glm::vec3>& verts, std::vector<unsigned int>& indices, std::vector<Texture>& textures) : Mesh()
+	Mesh(std::vector<glm::vec3>& verts, 
+		std::vector<unsigned int>& indices, 
+		std::vector<Texture>& textures) : Mesh()
 	{
 		for (int i = 0; i < verts.size(); i++)
 		{
@@ -75,12 +77,6 @@ public:
 	void Render(ShaderProgram& shader);
 	void Init();
 	
-	const std::vector<Vertex>& Vertices()
-	{
-		return vertices;
-	}
-	const std::vector<unsigned int>& Indices()
-	{
-		return indices;
-	}
+	const std::vector<Vertex>& Vertices();
+	const std::vector<unsigned int>& Indices();
 };

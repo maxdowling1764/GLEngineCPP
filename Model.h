@@ -10,7 +10,6 @@
 class Model: public SceneObject
 {
 private:
-	// Model does not own the mesh. Instead, delegate 
 	Mesh m_mesh;
 
 public:

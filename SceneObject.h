@@ -6,18 +6,38 @@ class SceneObject
 protected:
 	SceneObject* m_parent;
 	glm::mat4 m_transform;
+	glm::mat4 m_model;
 	std::vector<SceneObject*> m_children;
 
 public:
-	SceneObject() :m_transform(glm::mat4(1.0f)), m_children({}),m_parent(nullptr) {};
-	virtual ~SceneObject() {};
-	SceneObject(glm::mat4 transform) :m_transform(transform), m_children({}), m_parent(nullptr) {};
-	SceneObject(glm::mat4 transform, SceneObject* parent) :m_transform(transform), m_children({}), m_parent(parent) {};
+	SceneObject() 
+		: m_transform(glm::mat4(1.0f)), 
+		m_model(glm::mat4(1.0f)), 
+		m_children({}), 
+		m_parent(nullptr) {};
+
+	SceneObject(glm::mat4 model) 
+		: m_transform(model),
+		m_model(model),
+		m_children({}), 
+		m_parent(nullptr) {};
+
+	SceneObject(glm::mat4 model, SceneObject* parent) 
+		: m_model(model), 
+		m_children({}), 
+		m_parent(parent) 
+	{
+		m_transform = (m_parent == nullptr) ? m_parent->GetTransform() * m_model : m_model;
+	};
 
 	void SetTransform(glm::mat4& transform);
-	glm::mat4& GetTransform();
-	virtual void Update() {};		// Called at least once each render call
-	virtual void Init() {};		// Called during construction
-	virtual void Start() {};		// Called on first render call
+	const glm::mat4& GetTransform();
+	virtual void Update();
+
+	// Called on first render call, regardless of whether the scene object is active.
+	// Derived classes should call SceneObject::Init() at the very end of the overriding method by convention.
+	virtual void Init();
+
+	virtual ~SceneObject();
 };
 

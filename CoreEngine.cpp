@@ -8,8 +8,7 @@ void CoreEngine::processInput(GLFWwindow* window)
 	glm::vec3 cam_up = m_renderer.GetActiveCamera()->GetUp();
 	glm::vec3 cam_left = glm::cross(cam_up, cam_forward);
 	glm::vec3 deltaPos = glm::vec3(0.0f);
-	double d_theta = 0.0f;
-	double d_phi = 0.0f;
+	
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(window, true);
@@ -39,19 +38,28 @@ void CoreEngine::processInput(GLFWwindow* window)
 		deltaPos -= move_speed * cam_up;
 	}
 	
+	// heading and azimuth
+	double d_theta = 0.0f;
+	double d_phi = 0.0f;
+
+	// performing updates
 	cam_pos += deltaPos;
-	m_renderer.GetActiveCamera()->SetPosition(cam_pos);
 	glfwGetCursorPos(m_window.GetWindowHandle(), &d_theta, &d_phi);
 	d_theta *= 0.005;
 	d_phi *= 0.005;
 
+	// enforcing invariants
 	cam_forward = glm::normalize(cam_forward - float(d_phi)*cam_up - float(d_theta)*cam_left);
 	cam_left = glm::normalize(cam_left - float(d_theta) * cam_forward);
 	cam_up = glm::vec3(0, 1, 0);
-	
+
+	glfwSetCursorPos(m_window.GetWindowHandle(), 0, 0);
+
+	// Finalizing to global camera state
+	m_renderer.GetActiveCamera()->SetPosition(cam_pos);
 	m_renderer.GetActiveCamera()->SetForward(cam_forward);
 	m_renderer.GetActiveCamera()->SetUp(cam_up);
-	glfwSetCursorPos(m_window.GetWindowHandle(), 0, 0);
+	
 }
 
 void CoreEngine::loop()

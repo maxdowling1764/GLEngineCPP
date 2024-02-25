@@ -63,9 +63,11 @@ void Renderer::Init()
 	std::int16_t max_vol_data = 1;
 	if (volumedata.size() > 0)
 	{
-		std::cout << "Read " << volumedata.size() * sizeof(int16_t) << " bytes from " << path << std::endl;
+		std::cout << "Read " << volumedata.size() * sizeof(int16_t) 
+					<< " bytes from " << path << std::endl;
 		for (int i = 0; i < volumedata.size(); i++)
 		{
+			// reverse endianness
 			volumedata[i] =  (0x00FF & (volumedata[i] >> 8)) | (0xFF00 & (volumedata[i] << 8));
 			if (volumedata[i] > max_vol_data)
 			{
