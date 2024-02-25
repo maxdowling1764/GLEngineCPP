@@ -11,14 +11,16 @@ struct Vertex
 	glm::vec2 uv;
 	
 	Vertex(const glm::vec3& position) : Vertex(position, glm::vec3(0), glm::vec2(0)) {};
-	Vertex(const glm::vec3& position, const glm::vec3& normal, const glm::vec2& uv) : position(position), normal(normal), uv(uv) {};
+	Vertex(const glm::vec3& position, const glm::vec3& normal, const glm::vec2& uv) 
+		: position(position), normal(normal), uv(uv) {};
 	Vertex() :Vertex(glm::vec3(0), glm::vec3(0), glm::vec2(0)) {};
 };
 
 struct Index
 {
 	unsigned int indices[3];
-	Index(const unsigned int& position, const unsigned int& normal, const unsigned int& uv) : indices{position, normal, uv}{};
+	Index(const unsigned int& position, const unsigned int& normal, const unsigned int& uv) 
+		: indices{position, normal, uv}{};
 	Index() : Index(0, 0, 0) {};
 };
 

@@ -38,15 +38,17 @@ void CoreEngine::processInput(GLFWwindow* window)
 	{
 		deltaPos -= move_speed * cam_up;
 	}
+	
 	cam_pos += deltaPos;
 	m_renderer.GetActiveCamera()->SetPosition(cam_pos);
 	glfwGetCursorPos(m_window.GetWindowHandle(), &d_theta, &d_phi);
 	d_theta *= 0.005;
 	d_phi *= 0.005;
+
 	cam_forward = glm::normalize(cam_forward - float(d_phi)*cam_up - float(d_theta)*cam_left);
 	cam_left = glm::normalize(cam_left - float(d_theta) * cam_forward);
-	cam_up = glm::cross(cam_forward, cam_left);
-
+	cam_up = glm::vec3(0, 1, 0);
+	
 	m_renderer.GetActiveCamera()->SetForward(cam_forward);
 	m_renderer.GetActiveCamera()->SetUp(cam_up);
 	glfwSetCursorPos(m_window.GetWindowHandle(), 0, 0);

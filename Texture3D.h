@@ -11,7 +11,8 @@ class Texture3D
 
 public:
 	Texture3D() :Texture3D(256, 256, 256) {};
-	Texture3D(const int& w, const int& h, const int& d) : width(w), height(h), depth(d), data(std::vector<GLfloat>(w*h*d*4, 0.5f))
+	Texture3D(const unsigned int& w, unsigned const int& h, const unsigned int& d) 
+		: width(w), height(h), depth(d), data(std::vector<GLfloat>(w*h*d*4, 0.5f))
 	{
 		p_data = data.data();	
 	};
@@ -19,7 +20,9 @@ public:
 	void Bind(ShaderProgram* shader, const char* id, GLenum slot);
 	void Load();
 	void Free();
-	void SetValue(const unsigned int& i, const unsigned int& j, const unsigned int& k, glm::vec4& value);
+	void SetValue(const unsigned int& i, 
+					const unsigned int& j, 
+					const unsigned int& k, glm::vec4& value);
 	template <typename T>
 	void SetData(std::vector<T>& d)
 	{

@@ -7,7 +7,7 @@
 namespace ModelParser
 {
 	// It is assumed here that UV_VERT will be identical for all possible
-	// UV texture lookups (i.e. normal maps, 
+	// UV texture lookups (i.e. normals, specularity, displaecment, parallax, etc)
 	enum Token
 	{
 		VERT, FACE, UV_VERT, NORM_VERT, NONE
