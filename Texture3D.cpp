@@ -1,9 +1,9 @@
 #include "Texture3D.h"
 
-void Texture3D::RenderInit()
+void configure(GLuint& textureUnit)
 {
-	glGenTextures(1, &h_texture3D);
-	glBindTexture(GL_TEXTURE_3D, h_texture3D);
+	glGenTextures(1, &textureUnit);
+	glBindTexture(GL_TEXTURE_3D, textureUnit);
 
 	// Set texture parameters
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -11,6 +11,11 @@ void Texture3D::RenderInit()
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+}
+void Texture3D::RenderInit()
+{
+	configure(h_texture3D);
+	Load();
 }
 
 void Texture3D::Load()
@@ -47,5 +52,32 @@ void Texture3D::SetValue(const unsigned int& i, const unsigned int& j, const uns
 		data[base + 1] = value.y;
 		data[base + 2] = value.z;
 		data[base + 3] = value.w;
+	}
+}
+
+void Texture3D::SetData(std::vector<glm::vec4>& d)
+{
+	data.clear();
+	for (glm::vec4 v : d)
+	{
+		for (unsigned int i = 0; i < 4; i++)
+		{
+			data.push_back((GLfloat)v[i]);
+		}
+	}
+}
+
+void Texture3D::SetData(std::vector<glm::vec4>& d, size_t start, size_t end)
+{
+	data.clear();
+	if (end <= d.size() && start < end)
+	{
+		for (int k = start; k < end; k++)
+		{
+			for (unsigned int i = 0; i < 4; i++)
+			{
+				data.push_back((GLfloat)d[k][i]);
+			}
+		}
 	}
 }

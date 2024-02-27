@@ -164,7 +164,7 @@ bool ModelParser::parse_face(std::istringstream& s,
     }
 }
 
-bool ModelParser::parse_obj(std::string& objPath,
+bool ModelParser::parse_obj(const std::string& objPath,
                             std::vector<glm::vec3>& vp,
                             std::vector<glm::vec3>& vn,
                             std::vector<glm::vec2>& vt,
@@ -231,7 +231,7 @@ bool ModelParser::parse_obj(std::string& objPath,
     return true;
 }
 
-bool ModelParser::parse_obj(std::string& objpath, Mesh& m)
+bool ModelParser::parse_obj(const std::string& objpath, Mesh& m)
 {
     std::vector<glm::vec3> vp = std::vector<glm::vec3>();
     std::vector<glm::vec3> vn = std::vector<glm::vec3>();

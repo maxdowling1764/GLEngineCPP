@@ -5,10 +5,11 @@ uniform mat4 projection;
 
 layout(location = 0) in vec3 v;
 layout(location = 1) in vec3 vn;
-layout(location = 2) in vec3 vt;
+layout(location = 2) in vec2 vt;
 
 out vec4 position;
 out vec3 norm;
+out vec2 uv;
 
 void main()
 {
@@ -17,4 +18,5 @@ void main()
 	mat4 pvm = projection * view * model;
 	gl_Position = pvm * vertex_position;
 	norm = vn;
+	uv = vt;
 }

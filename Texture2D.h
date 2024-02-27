@@ -26,12 +26,14 @@ public:
 		p_data = data.data();
 	};
 	void RenderInit(); // On GL Context Init
-	void BindSamplerUniform(ShaderProgram& shader, GLenum slot);
+	void Bind(ShaderProgram* shader, const char* id, GLenum slot);
 	void Load();
 	void Free();
 	void SetValue(const unsigned int& i,
 					const unsigned int& j,
 					const glm::vec4& value);
+	void SetData(std::vector<glm::vec4>& d);
+	void SetData(std::vector<glm::vec4>& d, size_t start, size_t end);
 	template <typename T>
 	void SetData(std::vector<T>& d)
 	{
@@ -41,5 +43,7 @@ public:
 			data.push_back((GLfloat)d[i]);
 		}
 	}
+
+	
 };
 

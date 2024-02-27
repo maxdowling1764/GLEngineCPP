@@ -22,12 +22,12 @@ namespace ModelParser
 					const std::vector<glm::vec2>& vt,
 					std::vector<Vertex>& vertices,
 					std::vector<Index>& indices);
-	bool parse_obj(std::string& objPath, std::vector<glm::vec3>& vp,
+	bool parse_obj(const std::string& objPath, 
+					std::vector<glm::vec3>& vp,
 					std::vector<glm::vec3>& vn,
 					std::vector<glm::vec2>& vt,
 					std::vector<Vertex>& vertices,
 					std::vector<Index>& indices);
-	bool parse_obj(std::string& objPath, Mesh& m);
-
+	bool parse_obj(const std::string& objPath, Mesh& m);
 }
 

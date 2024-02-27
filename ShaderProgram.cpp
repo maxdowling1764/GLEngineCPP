@@ -1,5 +1,5 @@
 #include "ShaderProgram.h"
-#include "Shader.h";
+#include "Shader.h"
 #include <iostream>
 
 ShaderProgram::ShaderProgram(ShaderPath vertexShader, ShaderPath fragmentShader):m_vertexShader(VertexShader(vertexShader)), m_fragmentShader(FragmentShader(fragmentShader))

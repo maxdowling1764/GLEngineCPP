@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <glm.hpp>
 std::string read_file(std::string& filepath);
 
 template <typename T>
@@ -26,3 +27,9 @@ std::vector<T> read_file_raw(std::string filepath)
 	file.close();
 	return res;
 }
+
+glm::vec4 piecewise_lerp(std::vector<std::pair<float, glm::vec4>>& points, float a, size_t start);
+
+// It is assumed that T is a linear order and control points are sorted in ascending order
+glm::vec4 piecewise_lerp(std::vector<std::pair<float, glm::vec4>>& points, float a);
+
