@@ -14,5 +14,7 @@ void Model::Init(VAOLoader& loader)
 
 void Model::Render(ShaderProgram& shader)
 {
+	shader.u_SetMat4("model", m_transform);
 	m_mesh.Render(shader);
+	shader.u_SetMat4("model", glm::identity<glm::mat4>());
 }

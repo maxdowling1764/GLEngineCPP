@@ -18,7 +18,7 @@ void Texture2D::Load()
 	if (p_data != nullptr)
 	{
 		glBindTexture(GL_TEXTURE_2D, h_Texture2D);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_FLOAT, p_data);
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_FLOAT, p_data);
 	}
 }
 
@@ -29,7 +29,7 @@ void Texture2D::Free()
 }
 
 /*
-* Pre: &shader is the most recent instance of ShaderProgram to have called ShaderProgram::Use()
+* Pre: shader is the most recent instance of ShaderProgram to have called ShaderProgram::Use()
 */
 void Texture2D::Bind(ShaderProgram* shader, const char* id, GLenum slot)
 {

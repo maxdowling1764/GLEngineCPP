@@ -17,6 +17,6 @@ void main()
 	position = vertex_position;
 	mat4 pvm = projection * view * model;
 	gl_Position = pvm * vertex_position;
-	norm = vn;
+	norm = (model*vec4(vn, 0)).xyz;
 	uv = vt;
 }

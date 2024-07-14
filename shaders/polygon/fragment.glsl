@@ -7,7 +7,7 @@ uniform float time;
 
 uniform sampler2D diffuse;
 
-vec3 lightdir = vec3(0.0, 0.0, 1.0);
+vec3 lightdir = vec3(0.0, 1.0, 0.0);
 void main()
 {
     vec4 diffuseColor = texture2D(diffuse, uv);//vec4(uv, 1.0, 1.0);

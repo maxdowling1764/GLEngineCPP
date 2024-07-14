@@ -239,6 +239,6 @@ bool ModelParser::parse_obj(const std::string& objpath, Mesh& m)
     std::vector<Vertex> vertices = std::vector<Vertex>();
     std::vector<Index> indices = std::vector<Index>();
     bool res = parse_obj(objpath, vp, vn, vt, vertices, indices);
-    if (res) { m = Mesh(vertices, indices); }
+    if (res) { m = Mesh(vertices); }
     return res;
 }

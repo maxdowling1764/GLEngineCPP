@@ -9,129 +9,105 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{009471e8-1202-4277-aff9-e14dc0d7d971}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Core">
       <UniqueIdentifier>{00f8e0ac-1ca1-4e67-a9a1-d5ccf734e606}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Shader">
+      <UniqueIdentifier>{f9fa2844-3c7f-4a25-933c-0e19345566a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\RenderData">
+      <UniqueIdentifier>{b14117ff-4857-48d4-819f-d6c19dc1a962}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{b3894196-05b5-4bdd-bc27-e742b1b3cba3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shader">
+      <UniqueIdentifier>{2c414791-3ed8-4862-8f9e-20809fdfa4a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RenderData">
+      <UniqueIdentifier>{1743f6c7-1596-451c-bf1b-1f062f117904}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSources">
+      <UniqueIdentifier>{009471e8-1202-4277-aff9-e14dc0d7d971}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSources\Overlay">
+      <UniqueIdentifier>{a371dfa1-cf28-40c8-881e-7707d6669646}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSources\Polygon">
+      <UniqueIdentifier>{fe8aa066-8c59-4c28-b860-c8697bf2560c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderSources\Volume">
+      <UniqueIdentifier>{31ea3e30-b28c-41db-80e0-c68a6957d212}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CoreEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ShaderProgram.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Util.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="World.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VAOLoader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\glad\src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="CoreEngine.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="SceneObject.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Texture3D.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source Files\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderProgram.cpp">
+      <Filter>Source Files\Shader</Filter>
     </ClCompile>
     <ClCompile Include="PolygonShaderProgram.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Quad.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shader</Filter>
     </ClCompile>
     <ClCompile Include="VolumetricShaderProgram.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="VAOLoader.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelParser.cpp">
+      <Filter>Source Files\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Quad.cpp">
+      <Filter>Source Files\RenderData</Filter>
     </ClCompile>
     <ClCompile Include="Texture2D.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture3D.cpp">
+      <Filter>Source Files\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="Util.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files\RenderData</Filter>
+    </ClCompile>
+    <ClCompile Include="OverlayShaderProgram.cpp">
+      <Filter>Source Files\Shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ShaderProgram.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VertexShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FragmentShader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Util.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="World.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VAOLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ModelParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Texture3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PolygonShaderProgram.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Quad.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VolumetricShaderProgram.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.h">
-      <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="CoreEngine.h">
       <Filter>Header Files\Core</Filter>
@@ -142,14 +118,76 @@
     <ClInclude Include="Window.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="FragmentShader.h">
+      <Filter>Header Files\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="PolygonShaderProgram.h">
+      <Filter>Header Files\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderProgram.h">
+      <Filter>Header Files\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexShader.h">
+      <Filter>Header Files\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Header Files\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="VolumetricShaderProgram.h">
+      <Filter>Header Files\Shader</Filter>
+    </ClInclude>
     <ClInclude Include="Texture2D.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture3D.h">
+      <Filter>Header Files\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Header Files\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneObject.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Quad.h">
+      <Filter>Header Files\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="VAOLoader.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Util.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelParser.h">
+      <Filter>Header Files\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files\RenderData</Filter>
+    </ClInclude>
+    <ClInclude Include="OverlayShaderProgram.h">
+      <Filter>Header Files\Shader</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\polygon\fragment.glsl" />
-    <None Include="shaders\polygon\vertex.glsl" />
-    <None Include="shaders\volumetric\fragment.glsl" />
-    <None Include="shaders\volumetric\vertex.glsl" />
+    <None Include="shaders\polygon\vertex.glsl">
+      <Filter>ShaderSources\Polygon</Filter>
+    </None>
+    <None Include="shaders\polygon\fragment.glsl">
+      <Filter>ShaderSources\Polygon</Filter>
+    </None>
+    <None Include="shaders\volumetric\fragment.glsl">
+      <Filter>ShaderSources\Volume</Filter>
+    </None>
+    <None Include="shaders\volumetric\vertex.glsl">
+      <Filter>ShaderSources\Volume</Filter>
+    </None>
+    <None Include="shaders\overlay\overlay_vertex.glsl">
+      <Filter>ShaderSources\Overlay</Filter>
+    </None>
+    <None Include="shaders\overlay\overlay_fragment.glsl">
+      <Filter>ShaderSources\Overlay</Filter>
+    </None>
   </ItemGroup>
 </Project>

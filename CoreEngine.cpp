@@ -69,7 +69,6 @@ void CoreEngine::loop()
 	{
 		// Process Inputs
 		processInput(m_window.GetWindowHandle());
-		m_time += DT;
 		m_renderer.Update(m_time, DT);
 		// Render Here 
 		m_renderer.Render();

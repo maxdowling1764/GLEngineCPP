@@ -49,13 +49,26 @@ public:
 
 	Mesh() : vertices({}), indices({}), textures({}), vao(0), vbo(0), ebo(0) {};
 
-	Mesh(std::vector<Vertex>& vertices, std::vector<Index>& indices) 
+	Mesh(std::vector<Vertex>& vertices) 
 	: vertices(vertices), indices(std::vector<unsigned int>()), 
 		textures(std::vector<Texture>()),
 		vao(0), vbo(0), ebo(0)
 	{
 		unsigned int i = 0;
 		for (const Vertex &vertex : vertices)
+		{
+			this->indices.push_back(i);
+			i++;
+		}
+	};
+
+	Mesh(std::vector<Vertex>& vertices, std::vector<unsigned int> indices)
+		: vertices(vertices), indices(indices),
+		textures(std::vector<Texture>()),
+		vao(0), vbo(0), ebo(0)
+	{
+		unsigned int i = 0;
+		for (const Vertex& vertex : vertices)
 		{
 			this->indices.push_back(i);
 			i++;

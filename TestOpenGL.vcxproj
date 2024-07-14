@@ -157,6 +157,7 @@
     <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="OverlayShaderProgram.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="Texture3D.cpp" />
     <ClCompile Include="Util.cpp" />
@@ -170,13 +171,12 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CoreEngine.h" />
     <ClInclude Include="FragmentShader.h" />
+    <ClInclude Include="OverlayShaderProgram.h" />
     <ClInclude Include="PolygonShaderProgram.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelParser.h" />
-    <ClInclude Include="RenderBuffer.h" />
     <ClInclude Include="Renderer.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="SceneObject.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />
@@ -191,6 +191,8 @@
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\overlay\overlay_fragment.glsl" />
+    <None Include="shaders\overlay\overlay_vertex.glsl" />
     <None Include="shaders\polygon\fragment.glsl" />
     <None Include="shaders\polygon\vertex.glsl" />
     <None Include="shaders\volumetric\fragment.glsl" />
