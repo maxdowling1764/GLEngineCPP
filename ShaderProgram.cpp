@@ -1,6 +1,7 @@
 #include "ShaderProgram.h"
 #include "Shader.h"
 #include <iostream>
+#include <assert.h>
 
 ShaderProgram::ShaderProgram(ShaderPath vertexShader, ShaderPath fragmentShader):m_vertexShader(VertexShader(vertexShader)), m_fragmentShader(FragmentShader(fragmentShader))
 {
@@ -63,7 +64,12 @@ void ShaderProgram::u_SetFloat(const char* name, const float& val)
 
 void ShaderProgram::u_Set1i(const char* name, const int& val)
 {
-	glUniform1f(glGetUniformLocation(m_programHandle, name), val);
+	GLint loc = glGetUniformLocation(m_programHandle, name);
+	GLint v;
+	std::cout << "Uniform1i <" << name << "> &= " << loc << std::endl;
+	glUniform1i(loc, val);
+	glGetUniformiv(m_programHandle, loc, &v);
+	//assert(v == val, "Failed to set uniform: " << name << "\n");
 }
 
 void ShaderProgram::attach()

@@ -12,6 +12,7 @@
 struct FrameBuffer {
 	unsigned int framebuffer;
 	Texture2D texture;
+	Texture2D depthbuffer;
 	unsigned int renderbuffer;
 	FrameBuffer() : texture(Texture2D(1920, 1080, "framebuffer")) {};
 };
@@ -37,14 +38,14 @@ public:
 	void SetActiveCamera(Camera& cam);
 	void Cleanup();
 private:
-	Quad rootVolume;
+	Quad m_screenPlane;
 	Quad m_groundPlane;
 	std::vector<SceneObject> m_sceneObjects;
 	Texture3D volume;
 	Texture2D texture;
 	Texture2D m_screenTexture;
 	ShaderProgram* m_shader;
-	OverlayShaderProgram m_overlayShader;
+	OverlayShaderProgram m_screenShader;
 	VAOLoader m_loader;
 	Camera m_activeCamera;
 	Model m_model;

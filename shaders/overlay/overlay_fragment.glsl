@@ -1,7 +1,9 @@
 #version 330 core
 
 in vec2 uv;
-uniform sampler2D framebuffer;
+uniform sampler2D colorbuffer;
+uniform sampler2D depthbuffer;
+uniform float t;
 
 float r = 0.002f;
 
@@ -28,6 +30,7 @@ vec4 desaturate(vec4 c, float s)
 
 void main()
 {
+    /*
     float s = 1.0 / 16.0;
     float kernel[9] = float[](s, 2*s, s,
                               2*s,  4*s, 2*s,
@@ -51,7 +54,9 @@ void main()
         }
         color2 = desaturate(color2, 1.4 - length(color.xyz));
     }
-    
+    */
 
-    gl_FragColor = color2;
+    float d = texture2D(depthbuffer, uv).r;
+
+    gl_FragColor = vec4(texture2D(colorbuffer, uv).xyz, 1.0);
 } 

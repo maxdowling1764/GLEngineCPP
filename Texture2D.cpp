@@ -34,9 +34,9 @@ void Texture2D::Free()
 void Texture2D::Bind(ShaderProgram* shader, const char* id, GLenum slot)
 {
 	// Bind the 3D texture to the shader program
-	shader->u_Set1i(id, slot);
 	glActiveTexture(GL_TEXTURE0 + slot);
 	glBindTexture(GL_TEXTURE_2D, h_Texture2D);
+	shader->u_Set1i(id, slot);
 }
 
 void Texture2D::SetValue(const unsigned int& i, const unsigned int&j, const glm::vec4& value)

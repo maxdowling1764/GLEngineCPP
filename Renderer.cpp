@@ -73,7 +73,7 @@ std::vector <glm::vec4> load_volume_data(const std::string& volumepath)
 	return vecdata;
 }
 Renderer::Renderer() :
-	rootVolume(Quad(glm::vec3(-1.0f, 1.0f, 0.5f),
+	m_screenPlane(Quad(glm::vec3(-1.0f, 1.0f, 0.5f),
 		glm::vec3(1.0f, 1.0f, 0.5f),
 		glm::vec3(-1.0f, -1.0f, 0.5f),
 		glm::vec3(1.0f, -1.0f, 0.5f))),
@@ -84,7 +84,7 @@ Renderer::Renderer() :
 	m_loader(VAOLoader()),
 	m_activeCamera(Camera()),
 	m_shader(new PolygonShaderProgram(m_activeCamera)),
-	m_overlayShader(OverlayShaderProgram(m_activeCamera)),
+	m_screenShader(OverlayShaderProgram(m_activeCamera)),
 	m_mesh(Mesh()),
 	m_groundPlane(Quad(glm::vec3(-1.0f, 0, -1.0f),
 		glm::vec3(1.0f, 0, -1.0f),
@@ -134,9 +134,15 @@ void Renderer::Render()
 	glDisable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT);
 	/* Now render the viewport quad directly to the screen */
-	m_overlayShader.Use();
-	m_framebuffer.texture.Bind(&m_overlayShader, "framebuffer", 0);
-	rootVolume.Render(m_overlayShader);
+	m_screenShader.Use();
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_framebuffer.texture.Handle());
+	m_screenShader.u_Set1i("colorbuffer", 1);
+	
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_framebuffer.depthbuffer.Handle());
+	m_screenShader.u_Set1i("depthbuffer", 2);
+	m_screenPlane.Render(m_screenShader);
 }
 
 void init_framebuffer(FrameBuffer* res)
@@ -146,22 +152,28 @@ void init_framebuffer(FrameBuffer* res)
 
 	res->texture.RenderInit();
 
+	//glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, res->texture.Handle());
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1920, 1080, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, res->texture.Handle(), 0);
 
-	glGenRenderbuffers(1, &(res->renderbuffer));
-	glBindRenderbuffer(GL_RENDERBUFFER, res->renderbuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1920, 1080);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, res->renderbuffer);
+
+	res->depthbuffer.RenderInit();
+
+	//glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, res->depthbuffer.Handle());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1920, 1080, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, res->depthbuffer.Handle(), 0);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 
 void Renderer::Init()
 {
+	std::cout << "GL Version: " << glGetString(GL_VERSION) << std::endl;
 	init_framebuffer(&m_framebuffer);
 	m_shader->RenderInit();
 	m_shader->Use();
@@ -173,13 +185,16 @@ void Renderer::Init()
 
 	/* Initialize the framebuffer to be bound to a texture uniform in the overlay shader */
 
-	m_overlayShader.RenderInit();
-	m_overlayShader.Use();
-	m_overlayShader.InitUniforms();
+	m_screenShader.RenderInit();
+	m_screenShader.Use();
+	m_screenShader.InitUniforms();
+	m_screenShader.u_Set1i("colorbuffer", 1);
+	m_screenShader.u_Set1i("depthbuffer", 2);
+	m_screenShader.u_SetFloat("t", 0.1f);
 
 	//volume.Bind(m_shader, "tex", GL_TEXTURE0);
 	
-	rootVolume.Init(m_loader);
+	m_screenPlane.Init(m_loader);
 	if (mesh_is_loaded)
 	{
 		m_model.Init(m_loader);
