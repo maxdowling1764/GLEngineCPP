@@ -66,15 +66,15 @@ void main()
 
     float d = texture2D(depthbuffer, uv).r;
 
-    float domainDepth = texture2D(domaindepth_back, uv).r - texture2D(domaindepth_front, uv).r;
+    float domainDepth = lindepth(texture2D(domaindepth_back, uv).r) - lindepth(texture2D(domaindepth_front, uv).r);
 
-    if (abs(domainDepth)  > 0.001 && lindepth(texture2D(domaindepth_front, uv).r) > lindepth(d))
+    if (abs(domainDepth)  > 0.001 && lindepth(texture2D(domaindepth_front, uv).r) == lindepth(d))
     {
         gl_FragColor = vec4(domainDepth, 0.0, 0.0, 1.0);
     }
     else
     { 
-        gl_FragColor = vec4(texture2D(colorbuffer, uv).xyz, 1.0);
+        gl_FragColor = vec4(texture2D(depthbuffer, uv).xyz, 1.0);
     }
     
 //    gl_FragColor = vec4(texture2D(domaindepth_back, uv).r, 0, 0, 1.0);
