@@ -89,7 +89,8 @@ Renderer::Renderer() :
 	m_groundPlane(Quad(glm::vec3(-1.0f, 0, -1.0f),
 		glm::vec3(1.0f, 0, -1.0f),
 		glm::vec3(-1.0f, 0, 1.0f),
-		glm::vec3(1.0f, 0, 1.0f)))
+		glm::vec3(1.0f, 0, 1.0f))),
+	m_domainBuffer(DomainBuffer(1920, 1080))
 {
 	std::string meshpath = "resources/models/smooth_suzzanne.obj";
 	std::vector<glm::vec4> vecdata = load_volume_data("resources/textures/volume/MRbrain/data.dat");
@@ -120,6 +121,7 @@ void Renderer::Render()
 	
 	glBindFramebuffer(GL_FRAMEBUFFER, m_framebuffer.framebuffer);
 	glEnable(GL_DEPTH_TEST);
+	glCullFace(GL_BACK);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	m_shader->Use();
@@ -128,10 +130,25 @@ void Renderer::Render()
 	m_model.Render(*m_shader);
 	m_groundPlane.Render(*m_shader);
 
+	glBindFramebuffer(GL_FRAMEBUFFER, m_domainBuffer.front_framebuffer);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	m_model.Render(*m_shader);
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, m_domainBuffer.back_framebuffer);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glCullFace(GL_FRONT);
+	m_model.Render(*m_shader);
+
 
 	// Post-Processing
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
 	glClear(GL_COLOR_BUFFER_BIT);
 	/* Now render the viewport quad directly to the screen */
 	m_screenShader.Use();
@@ -142,7 +159,40 @@ void Renderer::Render()
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, m_framebuffer.depthbuffer.Handle());
 	m_screenShader.u_Set1i("depthbuffer", 2);
+
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, m_domainBuffer.front_depthbuffer.Handle());
+	m_screenShader.u_Set1i("domaindepth_front", 3);
+	
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, m_domainBuffer.back_depthbuffer.Handle());
+	m_screenShader.u_Set1i("domaindepth_back", 4);
+
 	m_screenPlane.Render(m_screenShader);
+}
+
+void init_domainbuffer(DomainBuffer* res)
+{
+	glGenFramebuffers(1, &(res->front_framebuffer));
+	glGenFramebuffers(1, &(res->back_framebuffer));
+	
+	// Init front face buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, res->back_framebuffer);
+	res->back_depthbuffer.RenderInit();
+	glBindTexture(GL_TEXTURE_2D, res->back_depthbuffer.Handle());
+	glTexParameteri(res->back_depthbuffer.Handle(), GL_DEPTH_TEXTURE_MODE, GL_DEPTH_COMPONENT);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, res->width, res->height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, res->back_depthbuffer.Handle(), 0);
+
+	// Init back face buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, res->front_framebuffer);
+	res->front_depthbuffer.RenderInit();
+	glTexParameteri(res->front_depthbuffer.Handle(), GL_DEPTH_TEXTURE_MODE, GL_DEPTH_COMPONENT);
+	glBindTexture(GL_TEXTURE_2D, res->front_depthbuffer.Handle());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, res->width, res->height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, res->front_depthbuffer.Handle(), 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void init_framebuffer(FrameBuffer* res)
@@ -163,6 +213,7 @@ void init_framebuffer(FrameBuffer* res)
 
 	//glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, res->depthbuffer.Handle());
+	glTexParameteri(res->depthbuffer.Handle(), GL_DEPTH_TEXTURE_MODE, GL_DEPTH_COMPONENT);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1920, 1080, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, res->depthbuffer.Handle(), 0);
@@ -175,6 +226,7 @@ void Renderer::Init()
 {
 	std::cout << "GL Version: " << glGetString(GL_VERSION) << std::endl;
 	init_framebuffer(&m_framebuffer);
+	init_domainbuffer(&m_domainBuffer);
 	m_shader->RenderInit();
 	m_shader->Use();
 	m_shader->InitUniforms();

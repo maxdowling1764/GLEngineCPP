@@ -3,6 +3,8 @@
 in vec2 uv;
 uniform sampler2D colorbuffer;
 uniform sampler2D depthbuffer;
+uniform sampler2D domaindepth_back;
+uniform sampler2D domaindepth_front;
 uniform float t;
 
 float r = 0.002f;
@@ -26,6 +28,12 @@ vec4 desaturate(vec4 c, float s)
     float v = dot(vec3(1), c.xyz)/3.0;
     vec3 center = vec3(v);
     return vec4(center + s*(c.xyz-center), c.w);
+}
+
+float lindepth(float depth)
+{
+    float z = depth * 2.0 - 1.0;
+    return (2.0 * 100 * 0.1) / (100.0 + 0.1 - z * (100 - 0.1));
 }
 
 void main()
@@ -58,5 +66,16 @@ void main()
 
     float d = texture2D(depthbuffer, uv).r;
 
-    gl_FragColor = vec4(texture2D(colorbuffer, uv).xyz, 1.0);
+    float domainDepth = texture2D(domaindepth_back, uv).r - texture2D(domaindepth_front, uv).r;
+
+    if (abs(domainDepth)  > 0.001 && lindepth(texture2D(domaindepth_front, uv).r) > lindepth(d))
+    {
+        gl_FragColor = vec4(domainDepth, 0.0, 0.0, 1.0);
+    }
+    else
+    { 
+        gl_FragColor = vec4(texture2D(colorbuffer, uv).xyz, 1.0);
+    }
+    
+//    gl_FragColor = vec4(texture2D(domaindepth_back, uv).r, 0, 0, 1.0);
 } 

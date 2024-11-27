@@ -17,7 +17,12 @@ struct FrameBuffer {
 	FrameBuffer() : texture(Texture2D(1920, 1080, "framebuffer")) {};
 };
 
-
+struct DomainBuffer {
+	unsigned int front_framebuffer, back_framebuffer;
+	size_t width, height;
+	Texture2D front_depthbuffer, back_depthbuffer;
+	DomainBuffer(size_t width, size_t height) : width(width), height(height), front_depthbuffer(Texture2D(width, height)), back_depthbuffer(Texture2D(width, height)) {};
+};
 
 class Renderer
 {
@@ -51,9 +56,7 @@ private:
 	Model m_model;
 	Mesh m_mesh;
 	FrameBuffer m_framebuffer;
-	bool mesh_is_loaded = false;
-
-	
-	
+	DomainBuffer m_domainBuffer;
+	bool mesh_is_loaded = false;	
 };
 

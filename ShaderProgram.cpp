@@ -66,7 +66,7 @@ void ShaderProgram::u_Set1i(const char* name, const int& val)
 {
 	GLint loc = glGetUniformLocation(m_programHandle, name);
 	GLint v;
-	std::cout << "Uniform1i <" << name << "> &= " << loc << std::endl;
+	//std::cout << "Uniform1i <" << name << "> &= " << loc << std::endl;
 	glUniform1i(loc, val);
 	glGetUniformiv(m_programHandle, loc, &v);
 	//assert(v == val, "Failed to set uniform: " << name << "\n");
