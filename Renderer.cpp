@@ -49,7 +49,7 @@ std::vector <glm::vec4> load_volume_data(const std::string& volumepath)
 			}
 			else
 			{
-				vecdata.push_back(glm::vec4(1, 1, 1, 1));
+				vecdata.push_back(glm::vec4(0, 0, 0, 1));
 			}
 		}
 		std::cout << std::endl;
@@ -90,9 +90,10 @@ Renderer::Renderer() :
 		glm::vec3(1.0f, 0, -1.0f),
 		glm::vec3(-1.0f, 0, 1.0f),
 		glm::vec3(1.0f, 0, 1.0f))),
-	m_domainBuffer(DomainBuffer(1920, 1080))
+	m_domainBuffer(DomainBuffer(1920, 1080)),
+	m_modelPositionShader(FragPositionShader(m_activeCamera))
 {
-	std::string meshpath = "resources/models/smooth_suzzanne.obj";
+	std::string meshpath = "resources/models/cube_normals.obj";
 	std::vector<glm::vec4> vecdata = load_volume_data("resources/textures/volume/MRbrain/data.dat");
 	volume.SetData(vecdata);
 	texture.SetData(vecdata, TEX_WIDTH*TEX_HEIGHT*50, TEX_WIDTH*TEX_HEIGHT*51);
@@ -127,26 +128,27 @@ void Renderer::Render()
 	m_shader->Use();
 	texture.Bind(m_shader, "diffuse", 0);
 	m_shader->Update(0.0f, 0.0f);
-	m_model.Render(*m_shader);
+	//m_model.Render(*m_shader);
 	m_groundPlane.Render(*m_shader);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_domainBuffer.front_framebuffer);
-	glClear(GL_DEPTH_BUFFER_BIT);
-	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	m_modelPositionShader.Use();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-	m_model.Render(*m_shader);
+	m_model.Render(m_modelPositionShader);
 	
 	glBindFramebuffer(GL_FRAMEBUFFER, m_domainBuffer.back_framebuffer);
-	glClear(GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glCullFace(GL_FRONT);
-	m_model.Render(*m_shader);
+	m_model.Render(m_modelPositionShader);
 
 
 	// Post-Processing
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -168,6 +170,18 @@ void Renderer::Render()
 	glBindTexture(GL_TEXTURE_2D, m_domainBuffer.back_depthbuffer.Handle());
 	m_screenShader.u_Set1i("domaindepth_back", 4);
 
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_2D, m_domainBuffer.front_pos_buffer.Handle());
+	m_screenShader.u_Set1i("domainpos_front", 5);
+
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_2D, m_domainBuffer.back_pos_buffer.Handle());
+	m_screenShader.u_Set1i("domainpos_back", 6);
+
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_3D, volume.Handle());
+	m_screenShader.u_Set1i("volumeData", 7);
+
 	m_screenPlane.Render(m_screenShader);
 }
 
@@ -179,19 +193,30 @@ void init_domainbuffer(DomainBuffer* res)
 	// Init front face buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, res->back_framebuffer);
 	res->back_depthbuffer.RenderInit();
+	res->back_pos_buffer.RenderInit();
 	glBindTexture(GL_TEXTURE_2D, res->back_depthbuffer.Handle());
 	glTexParameteri(res->back_depthbuffer.Handle(), GL_DEPTH_TEXTURE_MODE, GL_DEPTH_COMPONENT);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, res->width, res->height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, res->back_depthbuffer.Handle(), 0);
 
+	glBindTexture(GL_TEXTURE_2D, res->back_pos_buffer.Handle());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, res->width, res->height, 0, GL_RGBA, GL_FLOAT, nullptr);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, res->back_pos_buffer.Handle(), 0);
+
 	// Init back face buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, res->front_framebuffer);
 	res->front_depthbuffer.RenderInit();
-	glTexParameteri(res->front_depthbuffer.Handle(), GL_DEPTH_TEXTURE_MODE, GL_DEPTH_COMPONENT);
+	res->front_pos_buffer.RenderInit();
 	glBindTexture(GL_TEXTURE_2D, res->front_depthbuffer.Handle());
+	glTexParameteri(res->front_depthbuffer.Handle(), GL_DEPTH_TEXTURE_MODE, GL_DEPTH_COMPONENT);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, res->width, res->height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, res->front_depthbuffer.Handle(), 0);
-
+	
+	glBindTexture(GL_TEXTURE_2D, res->front_pos_buffer.Handle());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, res->width, res->height, 0, GL_RGBA, GL_FLOAT, nullptr);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, res->front_pos_buffer.Handle(), 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -231,6 +256,11 @@ void Renderer::Init()
 	m_shader->Use();
 	m_shader->InitUniforms();
 
+	m_modelPositionShader.RenderInit();
+	m_modelPositionShader.Use();
+	m_modelPositionShader.InitUniforms();
+	glm::mat4 m = glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0f, 3.0f, 0.0f));
+	m_model.SetTransform(m);
 	texture.RenderInit();
 	m_screenTexture.RenderInit();
 	volume.RenderInit();
@@ -242,6 +272,8 @@ void Renderer::Init()
 	m_screenShader.InitUniforms();
 	m_screenShader.u_Set1i("colorbuffer", 1);
 	m_screenShader.u_Set1i("depthbuffer", 2);
+	m_screenShader.u_Set1i("domainpos_front", 5);
+
 	m_screenShader.u_SetFloat("t", 0.1f);
 
 	//volume.Bind(m_shader, "tex", GL_TEXTURE0);
@@ -280,6 +312,14 @@ void Renderer::Update(const float& time, const float& dt)
 {
 	m_shader->Use();
 	m_shader->Update(time, dt);
+
+	glm::mat4 rot = glm::rotate(
+						glm::rotate(glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0f, 1.0f, 0.0f)), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)), 
+						glm::radians(time * 100.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	m_model.SetTransform(rot);
+	m_modelPositionShader.Use();
+	m_modelPositionShader.Update(time, dt);
+	
 	
 	//glm::vec3 campos = m_activeCamera.GetPosition();
 	//

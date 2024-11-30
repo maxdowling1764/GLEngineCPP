@@ -26,6 +26,7 @@ public:
 
 	void SetData(std::vector<glm::vec4>& d);
 	void SetData(std::vector<glm::vec4>& d, size_t start, size_t end);
+	const GLuint& Handle() { return h_texture3D; }
 	
 	template <typename T>
 	void SetData(std::vector<T>& d)

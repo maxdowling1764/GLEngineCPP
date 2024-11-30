@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "Texture3D.h"
 #include "Texture2D.h"
+#include "FragPositionShader.h"
 
 struct FrameBuffer {
 	unsigned int framebuffer;
@@ -20,6 +21,7 @@ struct FrameBuffer {
 struct DomainBuffer {
 	unsigned int front_framebuffer, back_framebuffer;
 	size_t width, height;
+	Texture2D front_pos_buffer, back_pos_buffer;
 	Texture2D front_depthbuffer, back_depthbuffer;
 	DomainBuffer(size_t width, size_t height) : width(width), height(height), front_depthbuffer(Texture2D(width, height)), back_depthbuffer(Texture2D(width, height)) {};
 };
@@ -51,6 +53,7 @@ private:
 	Texture2D m_screenTexture;
 	ShaderProgram* m_shader;
 	OverlayShaderProgram m_screenShader;
+	FragPositionShader m_modelPositionShader;
 	VAOLoader m_loader;
 	Camera m_activeCamera;
 	Model m_model;

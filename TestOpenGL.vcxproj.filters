@@ -104,6 +104,9 @@
     <ClCompile Include="OverlayShaderProgram.cpp">
       <Filter>Source Files\Shader</Filter>
     </ClCompile>
+    <ClCompile Include="FragPositionShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="World.h">
@@ -169,6 +172,9 @@
     <ClInclude Include="OverlayShaderProgram.h">
       <Filter>Header Files\Shader</Filter>
     </ClInclude>
+    <ClInclude Include="FragPositionShader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\polygon\vertex.glsl">
@@ -189,5 +195,6 @@
     <None Include="shaders\overlay\overlay_fragment.glsl">
       <Filter>ShaderSources\Overlay</Filter>
     </None>
+    <None Include="shaders\polygon\frag_model_position.glsl" />
   </ItemGroup>
 </Project>

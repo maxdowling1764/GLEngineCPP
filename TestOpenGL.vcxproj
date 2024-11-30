@@ -158,6 +158,7 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="OverlayShaderProgram.cpp" />
+    <ClCompile Include="FragPositionShader.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="Texture3D.cpp" />
     <ClCompile Include="Util.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="SceneObject.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="FragPositionShader.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="Texture3D.h" />
     <ClInclude Include="Util.h" />
@@ -194,6 +196,7 @@
     <None Include="shaders\overlay\overlay_fragment.glsl" />
     <None Include="shaders\overlay\overlay_vertex.glsl" />
     <None Include="shaders\polygon\fragment.glsl" />
+    <None Include="shaders\polygon\frag_model_position.glsl" />
     <None Include="shaders\polygon\vertex.glsl" />
     <None Include="shaders\volumetric\fragment.glsl" />
     <None Include="shaders\volumetric\vertex.glsl" />

@@ -6,7 +6,7 @@ void CoreEngine::processInput(GLFWwindow* window)
 	glm::vec3 cam_pos = m_renderer.GetActiveCamera()->GetPosition();
 	glm::vec3 cam_forward = m_renderer.GetActiveCamera()->GetForward();
 	glm::vec3 cam_up = m_renderer.GetActiveCamera()->GetUp();
-	glm::vec3 cam_left = glm::cross(cam_up, cam_forward);
+	glm::vec3 cam_left = glm::normalize(glm::cross(cam_up, cam_forward));
 	glm::vec3 deltaPos = glm::vec3(0.0f);
 	
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
