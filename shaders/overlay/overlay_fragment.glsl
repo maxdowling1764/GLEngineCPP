@@ -69,13 +69,13 @@ void main()
 
     float d = texture2D(depthbuffer, uv).r;
 
-    float domainDepth = lindepth(texture2D(domaindepth_back, uv).r) - lindepth(texture2D(domaindepth_front, uv).r);
+    float domainDepth = min(lindepth(texture2D(domaindepth_back, uv).r), lindepth(d)) - lindepth(texture2D(domaindepth_front, uv).r);
 
     const int RAY_STEP_COUNT = 100;
     if (abs(domainDepth)  > 0.001 && lindepth(texture2D(domaindepth_front, uv).r) < lindepth(d))
     {
-        vec3 domainRay = texture2D(domainpos_back, uv).xyz - texture2D(domainpos_front, uv).xyz;
-        vec3 step = (1.0 / RAY_STEP_COUNT) * domainRay;
+        vec3 domainRay = normalize(texture2D(domainpos_back, uv).xyz - texture2D(domainpos_front, uv).xyz);
+        vec3 step = (domainDepth / RAY_STEP_COUNT) * domainRay;
         int i = 0;
         vec3 accum = vec3(0.0);
         for (vec3 p = texture2D(domainpos_front, uv).xyz; i < RAY_STEP_COUNT; p += step)

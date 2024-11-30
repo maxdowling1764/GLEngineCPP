@@ -314,7 +314,7 @@ void Renderer::Update(const float& time, const float& dt)
 	m_shader->Update(time, dt);
 
 	glm::mat4 rot = glm::rotate(
-						glm::rotate(glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0f, 1.0f, 0.0f)), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)), 
+						glm::rotate(glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0f, glm::sin(time), 0.0f)), glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
 						glm::radians(time * 100.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	m_model.SetTransform(rot);
 	m_modelPositionShader.Use();
