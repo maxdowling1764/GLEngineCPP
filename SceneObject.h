@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>
+#include <set>
 #include <glm.hpp>
 class SceneObject
 {
@@ -7,7 +7,7 @@ protected:
 	SceneObject* m_parent;
 	glm::mat4 m_transform;
 	glm::mat4 m_model;
-	std::vector<SceneObject*> m_children;
+	std::set<SceneObject*> m_children;
 
 public:
 	SceneObject() 
@@ -39,5 +39,6 @@ public:
 	virtual void Init();
 
 	virtual ~SceneObject();
+	void SetParent(SceneObject* parent);
 };
 

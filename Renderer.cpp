@@ -10,6 +10,7 @@
 #define TEX_WIDTH 256
 #define TEX_HEIGHT 256
 #define TEX_DEPTH 109
+
 std::vector <glm::vec4> load_volume_data(const std::string& volumepath)
 {
 	std::vector<int16_t> volumedata = read_file_raw<int16_t>(volumepath);
@@ -91,7 +92,8 @@ Renderer::Renderer() :
 		glm::vec3(-1.0f, 0, 1.0f),
 		glm::vec3(1.0f, 0, 1.0f))),
 	m_domainBuffer(DomainBuffer(1920, 1080)),
-	m_modelPositionShader(FragPositionShader(m_activeCamera))
+	m_modelPositionShader(FragPositionShader(m_activeCamera)),
+	m_framebuffer(FrameBuffer(1920, 1080))
 {
 	std::string meshpath = "resources/models/cube_normals.obj";
 	std::vector<glm::vec4> vecdata = load_volume_data("resources/textures/volume/MRbrain/data.dat");
@@ -99,6 +101,7 @@ Renderer::Renderer() :
 	texture.SetData(vecdata, TEX_WIDTH*TEX_HEIGHT*50, TEX_WIDTH*TEX_HEIGHT*51);
 	mesh_is_loaded = ModelParser::parse_obj(meshpath, m_mesh);
 	m_model = Model(m_mesh);
+	m_model2 = Model(m_mesh);
 }
 
 void read_framebuffer()
@@ -116,7 +119,6 @@ void draw_framebuffer(FrameBuffer* fb)
 
 void Renderer::Render()
 {
-
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	/* Render scene to framebuffer */
 	
@@ -126,7 +128,7 @@ void Renderer::Render()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	m_shader->Use();
-	texture.Bind(m_shader, "diffuse", 0);
+	//texture.Bind(m_shader, "diffuse", 0);
 	m_shader->Update(0.0f, 0.0f);
 	//m_model.Render(*m_shader);
 	m_groundPlane.Render(*m_shader);
@@ -229,7 +231,7 @@ void init_framebuffer(FrameBuffer* res)
 
 	//glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, res->texture.Handle());
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1920, 1080, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, res->width, res->height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, res->texture.Handle(), 0);
 
@@ -239,7 +241,7 @@ void init_framebuffer(FrameBuffer* res)
 	//glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, res->depthbuffer.Handle());
 	glTexParameteri(res->depthbuffer.Handle(), GL_DEPTH_TEXTURE_MODE, GL_DEPTH_COMPONENT);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1920, 1080, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, res->width, res->height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, res->depthbuffer.Handle(), 0);
 
@@ -282,6 +284,7 @@ void Renderer::Init()
 	if (mesh_is_loaded)
 	{
 		m_model.Init(m_loader);
+		m_model2.Init(m_loader);
 	}
 	glm::mat4 tmp = glm::scale(glm::identity<glm::mat4>(), glm::vec3(20.0f));
 	m_groundPlane.SetTransform(tmp);
@@ -314,7 +317,7 @@ void Renderer::Update(const float& time, const float& dt)
 	m_shader->Update(time, dt);
 
 	glm::mat4 rot = glm::rotate(
-						glm::rotate(glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0f, glm::sin(time), 0.0f)), glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+						glm::rotate(glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0f, glm::sin(time), 0.0f)), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
 						glm::radians(time * 100.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	m_model.SetTransform(rot);
 	m_modelPositionShader.Use();

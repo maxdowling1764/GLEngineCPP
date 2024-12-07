@@ -81,6 +81,9 @@ void CoreEngine::loop()
 		{
 			m_isRunning = false;
 		}
+		std::chrono::time_point<std::chrono::high_resolution_clock> currTime = std::chrono::high_resolution_clock::now();
+		std::cout << "Frame duration: " << std::chrono::duration_cast<std::chrono::milliseconds>(currTime - m_lastFrameTime).count() << "\n";
+		m_lastFrameTime = currTime;
 	}
 }
 
@@ -90,5 +93,6 @@ void CoreEngine::Start()
 	m_isRunning = true;
 	glfwSetInputMode(m_window.GetWindowHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+	m_lastFrameTime = std::chrono::high_resolution_clock::now();
 	loop();
 }

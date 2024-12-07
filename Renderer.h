@@ -15,7 +15,8 @@ struct FrameBuffer {
 	Texture2D texture;
 	Texture2D depthbuffer;
 	unsigned int renderbuffer;
-	FrameBuffer() : texture(Texture2D(1920, 1080, "framebuffer")) {};
+	size_t width, height;
+	FrameBuffer(size_t width, size_t height) : width(width), height(height), texture(Texture2D(width, height, "framebuffer")) {};
 };
 
 struct DomainBuffer {
@@ -57,6 +58,7 @@ private:
 	VAOLoader m_loader;
 	Camera m_activeCamera;
 	Model m_model;
+	Model m_model2;
 	Mesh m_mesh;
 	FrameBuffer m_framebuffer;
 	DomainBuffer m_domainBuffer;

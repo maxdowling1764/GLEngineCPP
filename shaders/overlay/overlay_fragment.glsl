@@ -71,7 +71,7 @@ void main()
 
     float domainDepth = min(lindepth(texture2D(domaindepth_back, uv).r), lindepth(d)) - lindepth(texture2D(domaindepth_front, uv).r);
 
-    const int RAY_STEP_COUNT = 100;
+    const int RAY_STEP_COUNT = 500;
     if (abs(domainDepth)  > 0.001 && lindepth(texture2D(domaindepth_front, uv).r) < lindepth(d))
     {
         vec3 domainRay = normalize(texture2D(domainpos_back, uv).xyz - texture2D(domainpos_front, uv).xyz);
@@ -84,8 +84,13 @@ void main()
             i++;
         }
 
-        //gl_FragColor = vec4(mix(texture2D(colorbuffer, uv).xyz, (1.0 / RAY_STEP_COUNT) * accum, (1.0/(RAY_STEP_COUNT*RAY_STEP_COUNT)) * dot(accum, accum)), 1.0);
+    
+        float blendFactor = (10.0 / (RAY_STEP_COUNT * RAY_STEP_COUNT)) * dot(accum, accum);
+        blendFactor = smoothstep(0.0, 1.0, blendFactor);
+        gl_FragColor = vec4(mix(texture2D(colorbuffer, uv).xyz, (1.0 / RAY_STEP_COUNT) * accum, blendFactor), 1.0);
+    
         
+        /*
         if (dot(accum, accum) == 0)
         {
             gl_FragColor = vec4(texture2D(colorbuffer, uv).xyz, 1.0);
@@ -95,6 +100,8 @@ void main()
             gl_FragColor = vec4((1.0 / RAY_STEP_COUNT) * accum, 1.0);
 
         }
+        */
+        
         
     }
     else
