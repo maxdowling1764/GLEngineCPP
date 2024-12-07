@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+
 #include <glm.hpp>
 std::string read_file(std::string& filepath);
 
@@ -21,6 +22,7 @@ std::vector<T> read_file_raw(std::string filepath)
 	std::streampos fileSize = file.tellg();
 	file.seekg(0, std::ios::beg);
 
+	assert(fileSize % sizeof(T) == 0);
 	std::size_t n = fileSize / sizeof(T);
 	res = std::vector<T>(n);
 	file.read(reinterpret_cast<char*>(res.data()), fileSize);
