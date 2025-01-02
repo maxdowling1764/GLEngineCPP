@@ -105,6 +105,10 @@ bool ModelParser::parse_index(std::istringstream& s, Index& dest)
             return false;
         }
     }
+    // Need to swap since our internal representation has vn before vt
+    // OBJ: vp, vt, vn
+    // Internal: vp, vn, vt
+    std::swap(dest.indices[1], dest.indices[2]);
     return i == 3;
 }
 
@@ -129,13 +133,13 @@ bool ModelParser::parse_face(std::istringstream& s,
             {
                 unsigned int i_v, i_t, i_n;
                 i_v = curr_idx.indices[0];
-                i_t = curr_idx.indices[1];
-                i_n = curr_idx.indices[2];
+                i_n = curr_idx.indices[1];
+                i_t = curr_idx.indices[2];
 
                 if (i_v < vp.size() && i_n < vn.size() && i_t < vt.size()) 
                 {
                     vertices.push_back(Vertex(vp[i_v], vn[i_n], vt[i_t]));
-                    
+                    indices.push_back(curr_idx);
                 }
                 else
                 {
@@ -239,6 +243,6 @@ bool ModelParser::parse_obj(const std::string& objpath, Mesh& m)
     std::vector<Vertex> vertices = std::vector<Vertex>();
     std::vector<Index> indices = std::vector<Index>();
     bool res = parse_obj(objpath, vp, vn, vt, vertices, indices);
-    if (res) { m = Mesh(vertices); }
+    if (res) { m = Mesh(vertices, indices, glm::uvec3(vp.size(), vn.size(), vt.size())); }
     return res;
 }

@@ -2,6 +2,8 @@
 #include "Window.h"
 #include "Renderer.h"
 #include <chrono>
+#include "CL\opencl.hpp"
+
 class CoreEngine
 {
 	const float DT = 0.01f;
@@ -17,6 +19,7 @@ private:
 	bool m_isRunning = false;
 	void processInput(GLFWwindow* window);
 	void loop();
+	void initCL();
 public:
 
 	void Start();

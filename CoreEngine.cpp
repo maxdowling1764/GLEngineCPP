@@ -1,6 +1,8 @@
 #include "CoreEngine.h"
 #include <iostream>
 #include "Camera.h"
+#include <fstream>
+#include "Util.h"
 void CoreEngine::processInput(GLFWwindow* window)
 {
 	glm::vec3 cam_pos = m_renderer.GetActiveCamera()->GetPosition();
@@ -62,6 +64,100 @@ void CoreEngine::processInput(GLFWwindow* window)
 	
 }
 
+
+void CoreEngine::initCL()
+{
+	std::vector<cl::Platform> platforms;
+	cl::Platform::get(&platforms);
+	auto platform = platforms.front();
+	std::vector<cl::Device> devices;
+	platform.getDevices(CL_DEVICE_TYPE_ALL, &devices);
+
+	cl::Device* selectedDevice = nullptr;
+	if (!devices.empty())
+	{
+		selectedDevice = &devices[0];
+		for (auto dev : devices)
+		{
+			if (dev.getInfo<CL_DEVICE_TYPE>() == CL_DEVICE_TYPE_GPU)
+			{
+				selectedDevice = &dev;
+			}
+		}
+	}
+
+	if (selectedDevice)
+	{
+		std::cout << "Selected Device: " << selectedDevice->getInfo<CL_DEVICE_VENDOR>() << std::endl;
+
+		std::string src = read_file("kernels/test.cl");
+		cl::Context context(*selectedDevice);
+		cl::Program program(context, { src });
+		auto err = program.build();
+
+		size_t log_size;
+		clGetProgramBuildInfo(program.get(), selectedDevice->get(), CL_PROGRAM_BUILD_LOG, 0, NULL, &log_size);
+		char* log = (char*)malloc(log_size);
+		clGetProgramBuildInfo(program.get(), selectedDevice->get(), CL_PROGRAM_BUILD_LOG, log_size, log, NULL);
+		printf("Build Log: \n%s\n", log);
+		free(log);
+
+		std::vector<int> values(1024);
+		for (int i = 0; i < 1024; i++)
+		{
+			values[i] = 1;
+		}
+
+		std::vector<int> filter(15);
+		for (int i = -7; i < 8; i++)
+		{
+			filter[i + 7] = 1;
+		}
+
+		cl::Kernel kernel(program, "testLocalId");
+		size_t workGroupSize = kernel.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(*selectedDevice);
+		size_t numWorkGroups = values.size() / workGroupSize;
+
+		cl::Buffer buffer(context, CL_MEM_READ_ONLY | CL_MEM_HOST_NO_ACCESS| CL_MEM_COPY_HOST_PTR, sizeof(int) * values.size(), values.data());
+		cl::Buffer filterBuffer(context, CL_MEM_READ_ONLY | CL_MEM_HOST_NO_ACCESS | CL_MEM_COPY_HOST_PTR, sizeof(int) * filter.size(), filter.data());
+		cl::Buffer outBuffer(context, CL_MEM_WRITE_ONLY | CL_MEM_HOST_READ_ONLY, sizeof(int) * values.size());
+
+		/*
+		kernel.setArg(0, buffer);
+		kernel.setArg(1, sizeof(int) * (workGroupSize + 14), nullptr);
+		kernel.setArg(2, filterBuffer);
+		kernel.setArg(3, (unsigned int)15);
+		kernel.setArg(4, outBuffer);
+		*/
+
+		kernel.setArg(0, buffer);
+		kernel.setArg(1, sizeof(int) * (workGroupSize), nullptr);
+		kernel.setArg(2, outBuffer);
+
+		cl::NDRange offset(0);
+		cl::NDRange globalSize(values.size());
+		cl::NDRange localSize(workGroupSize);
+
+		std::vector<int> outVals(1024);
+
+		cl::CommandQueue queue(context, *selectedDevice);
+		err = queue.enqueueNDRangeKernel(kernel, offset, globalSize, localSize);
+
+		err = queue.enqueueReadBuffer(outBuffer, CL_TRUE, 0, sizeof(int) * outVals.size(), outVals.data());
+		if (err)
+		{
+			std::cout << "CLERR : " << err << std::endl;
+		}
+		
+		for (int i : outVals)
+		{
+			std::cout << i << " ";
+		}
+		std::cout << "\n";
+	}
+	
+}
+
 void CoreEngine::loop()
 {
 	m_renderer.Init();
@@ -94,5 +190,6 @@ void CoreEngine::Start()
 	glfwSetInputMode(m_window.GetWindowHandle(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	m_lastFrameTime = std::chrono::high_resolution_clock::now();
+	//initCL();
 	loop();
 }

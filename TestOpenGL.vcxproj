@@ -119,13 +119,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\Code\glm\glm;D:\Code\glad\include;D:\Code\glfw-3.3.8.bin.WIN64\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Code\opencl\include;D:\Code\glm\glm;D:\Code\glad\include;D:\Code\glfw-3.3.8.bin.WIN64\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>D:\Code\glfw-3.3.8.bin.WIN64\lib-vc2022</AdditionalLibraryDirectories>
+      <AdditionalDependencies>openCL.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Code\opencl\lib;D:\Code\glfw-3.3.8.bin.WIN64\lib-vc2022</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -159,6 +159,7 @@
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="OverlayShaderProgram.cpp" />
     <ClCompile Include="FragPositionShader.cpp" />
+    <ClCompile Include="CLMesh.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="Texture3D.cpp" />
     <ClCompile Include="Util.cpp" />
@@ -170,6 +171,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CLContextManager.h" />
+    <ClInclude Include="CLMesh.h" />
     <ClInclude Include="CoreEngine.h" />
     <ClInclude Include="FragmentShader.h" />
     <ClInclude Include="OverlayShaderProgram.h" />
@@ -193,6 +196,7 @@
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="kernels\test.cl" />
     <None Include="shaders\overlay\overlay_fragment.glsl" />
     <None Include="shaders\overlay\overlay_vertex.glsl" />
     <None Include="shaders\polygon\fragment.glsl" />

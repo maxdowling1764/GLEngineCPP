@@ -6,7 +6,7 @@
 #include "PolygonShaderProgram.h"
 #include "OverlayShaderProgram.h"
 #include "ModelParser.h"
-
+#include "CLMesh.h"
 #define TEX_WIDTH 256
 #define TEX_HEIGHT 256
 #define TEX_DEPTH 109
@@ -102,6 +102,33 @@ Renderer::Renderer() :
 	mesh_is_loaded = ModelParser::parse_obj(meshpath, m_mesh);
 	m_model = Model(m_mesh);
 	m_model2 = Model(m_mesh);
+
+	std::vector<cl::Platform> platforms;
+	cl::Platform::get(&platforms);
+	auto platform = platforms.front();
+	std::vector<cl::Device> devices;
+	platform.getDevices(CL_DEVICE_TYPE_ALL, &devices);
+
+	cl::Device* selectedDevice = nullptr;
+	if (!devices.empty())
+	{
+		selectedDevice = &devices[0];
+		for (auto dev : devices)
+		{
+			if (dev.getInfo<CL_DEVICE_TYPE>() == CL_DEVICE_TYPE_GPU)
+			{
+				selectedDevice = &dev;
+			}
+		}
+	}
+
+	if (selectedDevice)
+	{
+		cl::Context context(*selectedDevice);
+		CLMesh clm = CLMesh(m_mesh, selectedDevice, &context);
+
+		clm.EnqueueMeshOp(m_mesh, CLMesh::CLMeshOp::BIN, *selectedDevice, context);
+	}
 }
 
 void read_framebuffer()

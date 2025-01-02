@@ -107,6 +107,9 @@
     <ClCompile Include="FragPositionShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CLMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="World.h">
@@ -175,6 +178,12 @@
     <ClInclude Include="FragPositionShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CLMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CLContextManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\polygon\vertex.glsl">
@@ -196,5 +205,6 @@
       <Filter>ShaderSources\Overlay</Filter>
     </None>
     <None Include="shaders\polygon\frag_model_position.glsl" />
+    <None Include="kernels\test.cl" />
   </ItemGroup>
 </Project>

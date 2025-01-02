@@ -13,12 +13,22 @@ void Mesh::Init()
 {
 }
 
-const std::vector<Vertex>& Mesh::Vertices()
+std::vector<Vertex>& Mesh::Vertices()
 {
     return vertices;
 }
 
-const std::vector<unsigned int>& Mesh::Indices()
+std::vector<unsigned int>& Mesh::Indices()
 {
     return indices;
+}
+
+std::vector<Index>& Mesh::OBJIndices()
+{
+    return objIndices;
+}
+
+glm::uvec3 Mesh::OBJDims()
+{
+    return glm::uvec3(n_vp, n_vn, n_vt);
 }

@@ -5,7 +5,9 @@
 #include <vector>
 
 #include <glm.hpp>
-std::string read_file(std::string& filepath);
+std::string read_file(const std::string filepath);
+std::string read_file(char* const filepath);
+
 
 template <typename T>
 std::vector<T> read_file_raw(std::string filepath)
