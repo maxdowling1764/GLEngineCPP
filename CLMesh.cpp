@@ -4,6 +4,7 @@ void CLMesh::loadMesh(Mesh& m, cl::Context& context)
 {
 	cl_mem_flags roFlags = CL_MEM_READ_ONLY | CL_MEM_HOST_NO_ACCESS | CL_MEM_COPY_HOST_PTR;
 	cl_mem_flags woFlags = CL_MEM_WRITE_ONLY | CL_MEM_HOST_READ_ONLY;
+	cl_mem_flags rwFlags = CL_MEM_READ_WRITE | CL_MEM_HOST_READ_ONLY;
 	unsigned int nVerts = m.Vertices().size();
 	buffers.gl_verts = cl::Buffer(context, roFlags, sizeof(Vertex) * nVerts, m.Vertices().data());
 	buffers.gl_indices = cl::Buffer(context, roFlags, sizeof(unsigned int) * nVerts, m.Indices().data());
@@ -19,13 +20,17 @@ void CLMesh::loadMesh(Mesh& m, cl::Context& context)
 	workDimensions.nVerts = nVerts;
 	workDimensions.nTris = nTris;
 
-	for (size_t i = 0; i < nTris; i++)
+	for (size_t i = 0; i < nTris/2; i++)
 	{
-		binLabels.push_back(i % BinDims.count);
+		binLabels.push_back(1);
+	}
+	for (size_t i = 0; i < nTris / 2; i++)
+	{
+		binLabels.push_back(0);
 	}
 	buffers.binLabels = cl::Buffer(context, roFlags, sizeof(unsigned int) * nTris, binLabels.data());
-	buffers.bins = cl::Buffer(context, woFlags, (sizeof(unsigned int) * 3) * BinDims.count * BinDims.capacity);
-	buffers.binCounts = cl::Buffer(context, woFlags, sizeof(unsigned int) * BinDims.count);
+	buffers.bins = cl::Buffer(context, rwFlags, (sizeof(unsigned int) * 3) * BinDims.count * BinDims.capacity);
+	buffers.binCounts = cl::Buffer(context, rwFlags, sizeof(unsigned int) * BinDims.count);
 	configureKernels();
 }
 
@@ -69,7 +74,7 @@ void CLMesh::EnqueueMeshOp(Mesh& m, CLMeshOp operation, cl::Device& device, cl::
 			break;
 		case BIN:
 			workDimensions.globalSize = cl::NDRange(round_worksize(workDimensions.nTris));
-			workDimensions.localSize = cl::NDRange(std::min((unsigned int)workDimensions.globalSize[0], 16u));
+			workDimensions.localSize = cl::NDRange(std::min((unsigned int)workDimensions.globalSize[0], 32u));
 			err = queue.enqueueNDRangeKernel(kernels.sortBins, workDimensions.offset, workDimensions.globalSize, workDimensions.localSize);
 			std::vector<unsigned int> tmpBins = std::vector<unsigned int>(BinDims.capacity * BinDims.count * 3);
 			err = queue.enqueueReadBuffer(
@@ -125,11 +130,11 @@ void CLMesh::configureKernels()
 	kernels.pull_mesh.setArg(4, buffers.obj_vT);
 	kernels.pull_mesh.setArg(5, workDimensions.nVerts);
 
-	kernels.sortBins.setArg(0, buffers.gl_indices);
-	kernels.sortBins.setArg(1, buffers.binLabels);
-	kernels.sortBins.setArg(2, buffers.bins);
-	kernels.sortBins.setArg(3, buffers.binCounts);
-	kernels.sortBins.setArg(4, BinDims.capacity);
-	kernels.sortBins.setArg(5, BinDims.count);
-	kernels.sortBins.setArg(6, workDimensions.nTris);
+	cl_int err = kernels.sortBins.setArg(0, buffers.gl_indices);
+	err = kernels.sortBins.setArg(1, buffers.binLabels);
+	err = kernels.sortBins.setArg(2, buffers.bins);
+	err = kernels.sortBins.setArg(3, buffers.binCounts);
+	err = kernels.sortBins.setArg(4, (unsigned int) BinDims.capacity);
+	err = kernels.sortBins.setArg(5, (unsigned int) BinDims.count);
+	err = kernels.sortBins.setArg(6, (unsigned int) workDimensions.nTris);
 }

@@ -231,21 +231,26 @@ kernel void sort_bins(global uint* indices, global uint* binLabels, global uint*
 {
 	uint idx = get_global_id(0);
 
+	if (idx == 0)
+	{
+		for (uint i = 0; i < n_bins; i++)
+		{
+			binCounts[i] = 0;
+		}
+	}
+	barrier(CLK_GLOBAL_MEM_FENCE);
+
 	if (idx < n_tris)
 	{
 		uint assignedBin = binLabels[idx];
-		if (binCounts[assignedBin] < bin_capacity)
-		{
-			atomic_inc(&binCounts[assignedBin]);
 
-			uint binPos = atomic_add(&binCounts[assignedBin], 1) - 1;
-			uint destBinIdx = assignedBin * bin_capacity * 3 + binPos * 3;
-			uint srcIdx = idx * 3;
+		uint binPos = atomic_add(&binCounts[assignedBin], 1);
+		uint destBinIdx = assignedBin * bin_capacity * 3 + binPos * 3;
+		uint srcIdx = idx * 3;
 
-			bins[destBinIdx] = indices[srcIdx];
-			bins[destBinIdx + 1] = indices[srcIdx + 1];
-			bins[destBinIdx + 2] = indices[srcIdx + 2];
-		}
+		bins[destBinIdx] = indices[srcIdx];
+		bins[destBinIdx + 1] = indices[srcIdx + 1];
+		bins[destBinIdx + 2] = indices[srcIdx + 2];
 	}
 }
 
