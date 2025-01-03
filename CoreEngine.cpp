@@ -61,9 +61,7 @@ void CoreEngine::processInput(GLFWwindow* window)
 	m_renderer.GetActiveCamera()->SetPosition(cam_pos);
 	m_renderer.GetActiveCamera()->SetForward(cam_forward);
 	m_renderer.GetActiveCamera()->SetUp(cam_up);
-	
 }
-
 
 void CoreEngine::initCL()
 {
@@ -178,7 +176,9 @@ void CoreEngine::loop()
 			m_isRunning = false;
 		}
 		std::chrono::time_point<std::chrono::high_resolution_clock> currTime = std::chrono::high_resolution_clock::now();
-		std::cout << "Frame duration: " << std::chrono::duration_cast<std::chrono::milliseconds>(currTime - m_lastFrameTime).count() << "\n";
+		long duration_ns = (float)std::chrono::duration_cast<std::chrono::nanoseconds>(currTime - m_lastFrameTime).count();
+		long duration_ms = duration_ns / 1000000;
+		std::cout << "Frame duration: " << duration_ms << "." << duration_ns - duration_ms*1000000 << "ms \n";
 		m_lastFrameTime = currTime;
 	}
 }
