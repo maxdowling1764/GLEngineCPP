@@ -79,7 +79,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <PublicIncludeDirectories>$(PublicIncludeDirectories)</PublicIncludeDirectories>
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)include;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -170,30 +170,30 @@
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="CLContextManager.h" />
-    <ClInclude Include="CLMesh.h" />
-    <ClInclude Include="CoreEngine.h" />
-    <ClInclude Include="FragmentShader.h" />
-    <ClInclude Include="OverlayShaderProgram.h" />
-    <ClInclude Include="PolygonShaderProgram.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="Model.h" />
-    <ClInclude Include="ModelParser.h" />
-    <ClInclude Include="Renderer.h" />
-    <ClInclude Include="SceneObject.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="ShaderProgram.h" />
-    <ClInclude Include="FragPositionShader.h" />
-    <ClInclude Include="Texture2D.h" />
-    <ClInclude Include="Texture3D.h" />
-    <ClInclude Include="Util.h" />
-    <ClInclude Include="VAOLoader.h" />
-    <ClInclude Include="VertexShader.h" />
-    <ClInclude Include="Quad.h" />
-    <ClInclude Include="VolumetricShaderProgram.h" />
-    <ClInclude Include="Window.h" />
-    <ClInclude Include="World.h" />
+    <ClInclude Include="include\Camera.h" />
+    <ClInclude Include="include\CLContextManager.h" />
+    <ClInclude Include="include\CLMesh.h" />
+    <ClInclude Include="include\CoreEngine.h" />
+    <ClInclude Include="include\FragmentShader.h" />
+    <ClInclude Include="include\FragPositionShader.h" />
+    <ClInclude Include="include\Mesh.h" />
+    <ClInclude Include="include\Model.h" />
+    <ClInclude Include="include\ModelParser.h" />
+    <ClInclude Include="include\OverlayShaderProgram.h" />
+    <ClInclude Include="include\PolygonShaderProgram.h" />
+    <ClInclude Include="include\Quad.h" />
+    <ClInclude Include="include\Renderer.h" />
+    <ClInclude Include="include\SceneObject.h" />
+    <ClInclude Include="include\Shader.h" />
+    <ClInclude Include="include\ShaderProgram.h" />
+    <ClInclude Include="include\Texture2D.h" />
+    <ClInclude Include="include\Texture3D.h" />
+    <ClInclude Include="include\Util.h" />
+    <ClInclude Include="include\VAOLoader.h" />
+    <ClInclude Include="include\VertexShader.h" />
+    <ClInclude Include="include\VolumetricShaderProgram.h" />
+    <ClInclude Include="include\Window.h" />
+    <ClInclude Include="include\World.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="kernels\test.cl" />
