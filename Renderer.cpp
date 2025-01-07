@@ -219,7 +219,7 @@ void init_domainbuffer(DomainBuffer* res)
 	glGenFramebuffers(1, &(res->front_framebuffer));
 	glGenFramebuffers(1, &(res->back_framebuffer));
 	
-	// Init front face buffer
+	// Init back face buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, res->back_framebuffer);
 	res->back_depthbuffer.RenderInit();
 	res->back_pos_buffer.RenderInit();
@@ -233,7 +233,7 @@ void init_domainbuffer(DomainBuffer* res)
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, res->back_pos_buffer.Handle(), 0);
 
-	// Init back face buffer
+	// Init front face buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, res->front_framebuffer);
 	res->front_depthbuffer.RenderInit();
 	res->front_pos_buffer.RenderInit();

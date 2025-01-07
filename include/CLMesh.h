@@ -15,13 +15,13 @@ private:
 	std::vector<glm::vec3> vp;
 	std::vector<unsigned int> binLabels;
 	std::vector<std::vector<unsigned int>> bins;
-	
+
 	struct {
 		cl::Kernel triangleOccupancy;
 		cl::Kernel push_mesh; // CLMesh -> GLMesh
 		cl::Kernel pull_mesh; // GLMesh -> CLMesh
 		cl::Kernel sortBins;
-	} kernels;
+	} meshOperations;
 
 	struct {
 		cl::NDRange offset = cl::NDRange(0);
@@ -71,9 +71,9 @@ public:
 			printf("Build Log (srcPath=`%s`): \n%s\n", m_srcPath.c_str(), log);
 			free(log);
 
-			kernels.triangleOccupancy = cl::Kernel(program, "tri_occupancy");
-			kernels.pull_mesh = cl::Kernel(program, "pull_mesh");
-			kernels.sortBins = cl::Kernel(program, "sort_bins");
+			meshOperations.triangleOccupancy = cl::Kernel(program, "tri_occupancy");
+			meshOperations.pull_mesh = cl::Kernel(program, "pull_mesh");
+			meshOperations.sortBins = cl::Kernel(program, "sort_bins");
 		}
 	};
 	void EnqueueMeshOp(Mesh& m, CLMeshOp operation, cl::Device& device, cl::Context& context);

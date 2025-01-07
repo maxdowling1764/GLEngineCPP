@@ -227,31 +227,85 @@ void gauss_seidel(local float* matA, local float* x, local float* b, uint dim, f
 	} while (error > epsilon && (++iter) < maxiter);
 }
 
-kernel void sort_bins(global uint* indices, global uint* binLabels, global uint* bins, global uint* binCounts, uint bin_capacity, uint n_bins, uint n_tris)
+kernel void sort_bins(global uint* indices, global uint* binLabels, 
+	global uint* bins, global uint* binCounts, uint bin_capacity, 
+	uint n_bins, uint n_tris,
+	local uint* localIndices, local uint* localBinLabels,
+	local uint* localBins, local uint* localBinCounts, uint localBinCapacity)
 {
 	uint idx = get_global_id(0);
-
-	if (idx == 0)
+	uint gid = get_group_id(0);
+	uint lid = get_local_id(0);
+	uint localSize = get_local_size(0);
+	
+	if (lid < n_bins)
 	{
-		for (uint i = 0; i < n_bins; i++)
+		localBinCounts[lid] = 0;
+	}
+	if (lid == 0)
+	{
+		for (int i = localSize; i < n_bins; i++)
 		{
-			binCounts[i] = 0;
+			localBinCounts[i] = 0;
 		}
 	}
-	barrier(CLK_GLOBAL_MEM_FENCE);
 
+	barrier(CLK_LOCAL_MEM_FENCE);
+	
 	if (idx < n_tris)
 	{
-		uint assignedBin = binLabels[idx];
+		localIndices[lid * 3] = indices[idx * 3];
+		localIndices[lid * 3 + 1] = indices[idx * 3 + 1];
+		localIndices[lid * 3 + 2] = indices[idx * 3 + 2];
 
-		uint binPos = atomic_add(&binCounts[assignedBin], 1);
-		uint destBinIdx = assignedBin * bin_capacity * 3 + binPos * 3;
-		uint srcIdx = idx * 3;
+		localBinLabels[lid] = binLabels[idx];
 
-		bins[destBinIdx] = indices[srcIdx];
-		bins[destBinIdx + 1] = indices[srcIdx + 1];
-		bins[destBinIdx + 2] = indices[srcIdx + 2];
+		barrier(CLK_LOCAL_MEM_FENCE);
+		
+		uint assignedBin = localBinLabels[lid];
+
+		uint binPos = atomic_add(&localBinCounts[assignedBin], 1);
+		uint destBinIdx = assignedBin * localBinCapacity * 3 + binPos * 3;
+		uint srcIdx = lid * 3;
+		
+		localBins[destBinIdx] = localIndices[srcIdx];
+		localBins[destBinIdx + 1] = localIndices[srcIdx + 1];
+		localBins[destBinIdx + 2] = localIndices[srcIdx + 2];
 	}
+	barrier(CLK_LOCAL_MEM_FENCE);
+
+	if (gid * localSize < n_tris)
+	{
+		if (lid < n_bins)
+		{
+			uint destIdx = atomic_add(&binCounts[lid], localBinCounts[lid]);
+			for (int i = 0; i < localBinCounts[lid]; i++)
+			{
+				uint globalOffset = 3 * (lid * bin_capacity + destIdx + i);
+				uint localOffset = 3 * (lid * localBinCapacity * n_bins + i);
+				bins[globalOffset] = localBins[localOffset];
+				bins[globalOffset + 1] = localBins[localOffset + 1];
+				bins[globalOffset + 2] = localBins[localOffset + 2];
+			}
+		}
+
+		if (lid == 0)
+		{
+			for (int j = localSize; j < n_bins; j++)
+			{
+				uint destIdx = atomic_add(&binCounts[j], localBinCounts[j]);
+				for (int i = 0; i < localBinCounts[j]; i++)
+				{
+					uint globalOffset = 3 * (j * bin_capacity + destIdx + i);
+					uint localOffset = 3 * (j * localBinCapacity * n_bins + i);
+					bins[globalOffset] = localBins[localOffset];
+					bins[globalOffset + 1] = localBins[localOffset + 1];
+					bins[globalOffset + 2] = localBins[localOffset + 2];
+				}
+			}
+		}
+	}
+	
 }
 
 kernel void test(global int* data, local int* localData, global int* outData)

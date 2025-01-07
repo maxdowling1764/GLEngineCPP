@@ -20,17 +20,14 @@ void CLMesh::loadMesh(Mesh& m, cl::Context& context)
 	workDimensions.nVerts = nVerts;
 	workDimensions.nTris = nTris;
 
-	for (size_t i = 0; i < nTris/2; i++)
+	for (size_t i = 0; i < nTris; i++)
 	{
-		binLabels.push_back(1);
-	}
-	for (size_t i = 0; i < nTris / 2; i++)
-	{
-		binLabels.push_back(0);
+		binLabels.push_back(i%2);
 	}
 	buffers.binLabels = cl::Buffer(context, roFlags, sizeof(unsigned int) * nTris, binLabels.data());
 	buffers.bins = cl::Buffer(context, rwFlags, (sizeof(unsigned int) * 3) * BinDims.count * BinDims.capacity);
 	buffers.binCounts = cl::Buffer(context, rwFlags, sizeof(unsigned int) * BinDims.count);
+
 	configureKernels();
 }
 
@@ -52,15 +49,15 @@ void CLMesh::EnqueueMeshOp(Mesh& m, CLMeshOp operation, cl::Device& device, cl::
 	{
 		case PULL:
 			workDimensions.globalSize = cl::NDRange(round_worksize(workDimensions.nVerts));
-			workDimensions.localSize = cl::NDRange(std::min(workDimensions.globalSize[0], kernels.pull_mesh.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(device)));
-			err = queue.enqueueNDRangeKernel(kernels.pull_mesh, workDimensions.offset, workDimensions.globalSize, workDimensions.localSize);
+			workDimensions.localSize = cl::NDRange(std::min(workDimensions.globalSize[0], meshOperations.pull_mesh.getWorkGroupInfo<CL_KERNEL_WORK_GROUP_SIZE>(device)));
+			err = queue.enqueueNDRangeKernel(meshOperations.pull_mesh, workDimensions.offset, workDimensions.globalSize, workDimensions.localSize);
 			err = queue.enqueueReadBuffer(buffers.obj_vP, CL_TRUE, 0, sizeof(glm::fvec3) * workDimensions.objDims.x, vp.data());
 			break;
 
 		case OCCUPANCY:
 			workDimensions.globalSize = cl::NDRange((unsigned int)(workDimensions.nTris - workDimensions.nTris % 32u + 32u), (unsigned int)(workDimensions.nVerts - workDimensions.nVerts % 32u + 32u));
 			workDimensions.localSize = cl::NDRange(16,16);
-			err = queue.enqueueNDRangeKernel(kernels.triangleOccupancy, workDimensions.offset, workDimensions.globalSize, workDimensions.localSize);
+			err = queue.enqueueNDRangeKernel(meshOperations.triangleOccupancy, workDimensions.offset, workDimensions.globalSize, workDimensions.localSize);
 			
 			err = queue.enqueueReadBuffer(buffers.obj_primOccupancy, CL_TRUE, 0, sizeof(int) * workDimensions.nTris * workDimensions.nVerts, occupancy.data());
 			
@@ -75,7 +72,8 @@ void CLMesh::EnqueueMeshOp(Mesh& m, CLMeshOp operation, cl::Device& device, cl::
 		case BIN:
 			workDimensions.globalSize = cl::NDRange(round_worksize(workDimensions.nTris));
 			workDimensions.localSize = cl::NDRange(std::min((unsigned int)workDimensions.globalSize[0], 32u));
-			err = queue.enqueueNDRangeKernel(kernels.sortBins, workDimensions.offset, workDimensions.globalSize, workDimensions.localSize);
+			configureKernels();
+			err = queue.enqueueNDRangeKernel(meshOperations.sortBins, workDimensions.offset, workDimensions.globalSize, workDimensions.localSize);
 			std::vector<unsigned int> tmpBins = std::vector<unsigned int>(BinDims.capacity * BinDims.count * 3);
 			err = queue.enqueueReadBuffer(
 				buffers.bins, CL_TRUE, 0, 
@@ -91,7 +89,7 @@ void CLMesh::EnqueueMeshOp(Mesh& m, CLMeshOp operation, cl::Device& device, cl::
 				unsigned int linBinIdx = binIdx * BinDims.capacity * 3;
 				for (unsigned int i = 0; i < binCounts[binIdx]; i++)
 				{
-					unsigned int offset = linBinIdx + i;
+					unsigned int offset = linBinIdx + i*3;
 					bins[binIdx].push_back(tmpBins[offset]);
 					bins[binIdx].push_back(tmpBins[offset + 1]);
 					bins[binIdx].push_back(tmpBins[offset + 2]);
@@ -111,30 +109,46 @@ void CLMesh::EnqueueMeshOp(Mesh& m, CLMeshOp operation, cl::Device& device, cl::
 
 void CLMesh::configureKernels()
 {
-	kernels.triangleOccupancy.setArg(0, buffers.obj_indices);
-	kernels.triangleOccupancy.setArg(1, buffers.obj_primOccupancy);
-	kernels.triangleOccupancy.setArg(2, workDimensions.nTris);
-	kernels.triangleOccupancy.setArg(3, workDimensions.nVerts);
+	meshOperations.triangleOccupancy.setArg(0, buffers.obj_indices);
+	meshOperations.triangleOccupancy.setArg(1, buffers.obj_primOccupancy);
+	meshOperations.triangleOccupancy.setArg(2, workDimensions.nTris);
+	meshOperations.triangleOccupancy.setArg(3, workDimensions.nVerts);
 
-	kernels.push_mesh.setArg(0, buffers.gl_verts);
-	kernels.push_mesh.setArg(1, buffers.obj_indices);
-	kernels.push_mesh.setArg(2, buffers.obj_vP);
-	kernels.push_mesh.setArg(3, buffers.obj_vN);
-	kernels.push_mesh.setArg(4, buffers.obj_vT);
-	kernels.push_mesh.setArg(5, workDimensions.nVerts);
+	meshOperations.push_mesh.setArg(0, buffers.gl_verts);
+	meshOperations.push_mesh.setArg(1, buffers.obj_indices);
+	meshOperations.push_mesh.setArg(2, buffers.obj_vP);
+	meshOperations.push_mesh.setArg(3, buffers.obj_vN);
+	meshOperations.push_mesh.setArg(4, buffers.obj_vT);
+	meshOperations.push_mesh.setArg(5, workDimensions.nVerts);
 
-	kernels.pull_mesh.setArg(0, buffers.gl_verts);
-	kernels.pull_mesh.setArg(1, buffers.obj_indices);
-	kernels.pull_mesh.setArg(2, buffers.obj_vP); 
-	kernels.pull_mesh.setArg(3, buffers.obj_vN);
-	kernels.pull_mesh.setArg(4, buffers.obj_vT);
-	kernels.pull_mesh.setArg(5, workDimensions.nVerts);
+	meshOperations.pull_mesh.setArg(0, buffers.gl_verts);
+	meshOperations.pull_mesh.setArg(1, buffers.obj_indices);
+	meshOperations.pull_mesh.setArg(2, buffers.obj_vP); 
+	meshOperations.pull_mesh.setArg(3, buffers.obj_vN);
+	meshOperations.pull_mesh.setArg(4, buffers.obj_vT);
+	meshOperations.pull_mesh.setArg(5, workDimensions.nVerts);
 
-	cl_int err = kernels.sortBins.setArg(0, buffers.gl_indices);
-	err = kernels.sortBins.setArg(1, buffers.binLabels);
-	err = kernels.sortBins.setArg(2, buffers.bins);
-	err = kernels.sortBins.setArg(3, buffers.binCounts);
-	err = kernels.sortBins.setArg(4, (unsigned int) BinDims.capacity);
-	err = kernels.sortBins.setArg(5, (unsigned int) BinDims.count);
-	err = kernels.sortBins.setArg(6, (unsigned int) workDimensions.nTris);
+	cl_int err = meshOperations.sortBins.setArg(0, buffers.gl_indices);
+	err = meshOperations.sortBins.setArg(1, buffers.binLabels);
+	err = meshOperations.sortBins.setArg(2, buffers.bins);
+	err = meshOperations.sortBins.setArg(3, buffers.binCounts);
+	err = meshOperations.sortBins.setArg(4, (unsigned int) BinDims.capacity);
+	err = meshOperations.sortBins.setArg(5, (unsigned int) BinDims.count);
+	err = meshOperations.sortBins.setArg(6, (unsigned int) workDimensions.nTris);
+
+
+	// Allocate uint buffer containing local indices
+	// sizeof(localIndices) = 3 * sizeof(unsigned int) * triangles_per_workgroup
+	unsigned int localIndexSize = sizeof(unsigned int) * (unsigned int) workDimensions.localSize[0] * 3u;
+	err = meshOperations.sortBins.setArg(7, localIndexSize, nullptr);
+	
+	unsigned int localBinCap = 8u; // max triangles per bin in each workgroup
+	// sizeof(localBins) = 3 * sizeof(unsigned int) * localBinCap * n_bins
+	unsigned int localBinSize =  (unsigned int) localBinCap * sizeof(unsigned int) * (unsigned int)BinDims.count * 3u;
+	err = meshOperations.sortBins.setArg(8, sizeof(unsigned int) * workDimensions.nTris, nullptr);
+	err = meshOperations.sortBins.setArg(9, localBinSize, nullptr);
+
+	unsigned int localBinCountSize = sizeof(unsigned int) * (unsigned int)BinDims.count;
+	err = meshOperations.sortBins.setArg(10, localBinCountSize, nullptr);
+	err = meshOperations.sortBins.setArg(11, localBinCap);
 }

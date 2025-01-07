@@ -19,7 +19,6 @@ private:
 	bool m_isRunning = false;
 	void processInput(GLFWwindow* window);
 	void loop();
-	void initCL();
 public:
 
 	void Start();

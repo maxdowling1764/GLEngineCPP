@@ -71,7 +71,7 @@ void main()
 
     float domainDepth = min(lindepth(texture2D(domaindepth_back, uv).r), lindepth(d)) - lindepth(texture2D(domaindepth_front, uv).r);
 
-    const int RAY_STEP_COUNT = 100;
+    const int RAY_STEP_COUNT = 1000;
     if (abs(domainDepth)  > 0.001 && lindepth(texture2D(domaindepth_front, uv).r) < lindepth(d))
     {
         vec3 domainRay = normalize(texture2D(domainpos_back, uv).xyz - texture2D(domainpos_front, uv).xyz);
